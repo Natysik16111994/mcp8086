@@ -41,11 +41,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BinaryNumber.cs" />
     <Compile Include="DebugForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="DebugForm.Designer.cs">
       <DependentUpon>DebugForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RegistersForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RegistersForm.Designer.cs">
+      <DependentUpon>RegistersForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Number.cs" />
     <Compile Include="OutputForm.cs">
@@ -72,6 +79,9 @@
     <Compile Include="Register.cs" />
     <EmbeddedResource Include="DebugForm.resx">
       <DependentUpon>DebugForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RegistersForm.resx">
+      <DependentUpon>RegistersForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="OutputForm.resx">
       <DependentUpon>OutputForm.cs</DependentUpon>

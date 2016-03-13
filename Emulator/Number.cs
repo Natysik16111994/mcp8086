@@ -9,6 +9,13 @@ namespace Emulator
         private int valueDec;
         private Dictionary<string, string> valueList;
 
+        private const int HexLength = 4;
+        private const int OctLength = 6;
+        private const int BinLength = 16;
+
+        private bool flagOverflow = false;
+        private bool flagCarry = false;
+
         // 
         public Number(int dec)
         {
@@ -18,6 +25,13 @@ namespace Emulator
 
         public static int ConvertToDec(string s, int b)
         {
+            if (b == 10)
+            {
+                int na = 0;
+                int.TryParse(s, out na);
+                return na;
+            }
+
             const string table = "ABCDEF";
             int d = 0, c = 0; string a = "";
 
@@ -65,6 +79,14 @@ namespace Emulator
             else b += table.Substring(d - 10, 1);
             string c = "";
             for (int i = 0; i < b.Length; i++) c += b.Substring(b.Length - i - 1, 1);
+
+            // Дополняем нулями
+            int f = 0;
+            if (bs == 16) f = HexLength;
+            else if (bs == 8) f = OctLength;
+            else if (bs == 2) f = BinLength;
+            while (c.Length < f) c = "0" + c;
+            while (c.Length > f) c = c.Substring(1);
             return c;  
         }
 
@@ -88,6 +110,10 @@ namespace Emulator
                 if (!valueList.ContainsKey("hex")) valueList.Add("hex", ToBase(16));
                 return valueList["hex"];
             }
+            set
+            {
+                this.Dec = Number.ConvertToDec(value, 16);
+            }
         }
 
         public string Oct
@@ -96,6 +122,10 @@ namespace Emulator
             {
                 if (!valueList.ContainsKey("oct")) valueList.Add("oct", ToBase(8));
                 return valueList["oct"];
+            }
+            set
+            {
+                this.Dec = Number.ConvertToDec(value, 8);
             }
         }
 
@@ -106,17 +136,37 @@ namespace Emulator
                 if (!valueList.ContainsKey("bin")) valueList.Add("bin", ToBase(2));
                 return valueList["bin"]; 
             }
+            set
+            {
+                this.Dec = Number.ConvertToDec(value, 2);
+            }
+        }
+
+        public bool Sign()
+        {
+            return this.Dec < 0;
         }
 
         public void Add(string s, int b)
         {
-            valueDec += Number.ConvertToDec(s, b);
+            Add(Number.ConvertToDec(s, b));
+        }
+
+        public void Add(int n)
+        {
+
+            valueDec += n;
             valueList.Clear();
+
+            this.flagCarry = valueDec > 65535;
+            if(this.flagCarry && this.Bin.Substring(0, 1) != "0") valueDec = 0;
         }
 
         public void Sub(string s, int b)
         {
-            valueDec -= Number.ConvertToDec(s, b);
+            int num = Number.ConvertToDec(s, b);
+            if (valueDec < num) this.flagCarry = true;
+            valueDec -= num;
             valueList.Clear();
         }
 
@@ -130,6 +180,17 @@ namespace Emulator
         {
             valueDec /= Number.ConvertToDec(s, b);
             valueList.Clear();
+        }
+
+        public bool IsCarryFlag()
+        {
+            return flagCarry;
+        }
+
+        public static Number operator +(Number a, Number b)
+        {
+            a.Add(b.Dec);
+            return a;
         }
     }
 }

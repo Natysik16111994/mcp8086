@@ -11,6 +11,7 @@ namespace Emulator
 {
     public partial class MainForm : Form
     {
+        private RegistersForm registersForm;
         private ProgramForm program;
         private DebugForm debug;
         private OutputForm output;
@@ -20,12 +21,18 @@ namespace Emulator
             InitializeComponent();
 
             // Выводим и располагаем формы
-            program = new ProgramForm();
+            registersForm = new RegistersForm();
+            registersForm.MdiParent = this;
+            registersForm.Left = 0;
+            registersForm.Top = 0;
+            registersForm.Show();
+
+            /*program = new ProgramForm();
             program.MdiParent = this;
             program.Location = this.Location;
             program.Left += this.Size.Width;
             program.Top += this.Size.Height;
-            program.Show();
+            program.Show();*/
 
             /*
             debug = new DebugForm();
@@ -60,19 +67,36 @@ namespace Emulator
             labelTF.Text = R.GetFlag(Register.Flags.TF);*/
             
             /*R.SetFlag(Register.Flags.AF, true);
-            R.SetFlag(Register.Flags.CF, true);
+            R.SetFlag(Register.Flags.CF, true); b 
             Console.WriteLine(R.GetFlag(Register.Flags.AF));
             Console.WriteLine(R.GetFlag(Register.Flags.DF));*/
 
             Processor processor = new Processor();
+            // 65535
+            /*
+            processor.AX.Value.Bin = "1111110000000000";
+            processor.BX.Value.Bin = "0000010100000000";
+            Console.WriteLine(processor.AX.GetAll());
+            Console.WriteLine(processor.BX.GetAll());
+            Console.WriteLine();
 
-            Number a = new Number(20);
-            Console.WriteLine(a.Hex);
-            Console.WriteLine(a.Oct);
-            Console.WriteLine(a.Bin);
+            processor.Add(processor.AX, processor.BX);
 
-            a.Div("10", 16);
-            Console.WriteLine(a.Hex);
+            Console.WriteLine(processor.AX.GetAll());
+            Console.WriteLine(processor.BX.GetAll());
+            Console.WriteLine(processor.AX.Value.Dec);
+            Console.WriteLine(string.Format("CF: {0}", processor.IsCarryFlag()));
+            Console.WriteLine(string.Format("OF: {0}", processor.IsOverflowFlag()));*/
+
+            BinaryNumber a = new BinaryNumber("1000000000000000", 2);
+            BinaryNumber b = new BinaryNumber("1100000000000000", 2);
+            Console.WriteLine(a.Binary);
+            Console.WriteLine(b.Binary);
+            a -= b;
+            Console.WriteLine(a.Binary);
+            Console.WriteLine(a.Decimal);
+
+            Console.WriteLine(string.Format("CF: {0}\nOF: {1}", a.CarryFlag, a.OverflowFlag));
         }
 
         // Кнопки в меню
