@@ -97,6 +97,7 @@
             this.labelIF = new System.Windows.Forms.Label();
             this.labelTF = new System.Windows.Forms.Label();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -104,6 +105,7 @@
             this.groupBox4.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.groupBox6.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -115,7 +117,7 @@
             this.помощьToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(734, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(865, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -291,7 +293,7 @@
             this.groupBox1.Controls.Add(this.CX);
             this.groupBox1.Controls.Add(this.BX);
             this.groupBox1.Controls.Add(this.H);
-            this.groupBox1.Location = new System.Drawing.Point(12, 37);
+            this.groupBox1.Location = new System.Drawing.Point(10, 3);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(152, 145);
             this.groupBox1.TabIndex = 8;
@@ -368,7 +370,7 @@
             this.groupBox2.Controls.Add(this.labelSI);
             this.groupBox2.Controls.Add(this.DI);
             this.groupBox2.Controls.Add(this.SI);
-            this.groupBox2.Location = new System.Drawing.Point(170, 37);
+            this.groupBox2.Location = new System.Drawing.Point(168, 3);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(133, 145);
             this.groupBox2.TabIndex = 9;
@@ -417,7 +419,7 @@
             this.groupBox3.Controls.Add(this.labelBP);
             this.groupBox3.Controls.Add(this.SP);
             this.groupBox3.Controls.Add(this.BP);
-            this.groupBox3.Location = new System.Drawing.Point(309, 37);
+            this.groupBox3.Location = new System.Drawing.Point(307, 3);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(140, 145);
             this.groupBox3.TabIndex = 10;
@@ -470,7 +472,7 @@
             this.groupBox4.Controls.Add(this.ES);
             this.groupBox4.Controls.Add(this.DS);
             this.groupBox4.Controls.Add(this.CS);
-            this.groupBox4.Location = new System.Drawing.Point(455, 37);
+            this.groupBox4.Location = new System.Drawing.Point(453, 3);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(133, 145);
             this.groupBox4.TabIndex = 11;
@@ -553,7 +555,7 @@
             // 
             this.groupBox5.Controls.Add(this.labelIP);
             this.groupBox5.Controls.Add(this.IP);
-            this.groupBox5.Location = new System.Drawing.Point(594, 37);
+            this.groupBox5.Location = new System.Drawing.Point(592, 3);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(133, 145);
             this.groupBox5.TabIndex = 12;
@@ -769,26 +771,34 @@
             this.groupBox6.Controls.Add(this.label63);
             this.groupBox6.Controls.Add(this.label64);
             this.groupBox6.Controls.Add(this.labelCF);
-            this.groupBox6.Location = new System.Drawing.Point(12, 182);
+            this.groupBox6.Location = new System.Drawing.Point(10, 148);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(716, 69);
             this.groupBox6.TabIndex = 13;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Регистр флагов";
             // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.groupBox1);
+            this.panel1.Controls.Add(this.groupBox6);
+            this.panel1.Controls.Add(this.groupBox2);
+            this.panel1.Controls.Add(this.groupBox5);
+            this.panel1.Controls.Add(this.groupBox3);
+            this.panel1.Controls.Add(this.groupBox4);
+            this.panel1.Location = new System.Drawing.Point(2, 27);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(863, 224);
+            this.panel1.TabIndex = 15;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(734, 258);
-            this.Controls.Add(this.groupBox6);
-            this.Controls.Add(this.groupBox5);
-            this.Controls.Add(this.groupBox4);
-            this.Controls.Add(this.groupBox3);
-            this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox1);
+            this.ClientSize = new System.Drawing.Size(865, 560);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.menuStrip1);
+            this.IsMdiContainer = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
@@ -807,6 +817,7 @@
             this.groupBox5.PerformLayout();
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
+            this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -882,6 +893,7 @@
         private System.Windows.Forms.Label labelIF;
         private System.Windows.Forms.Label labelTF;
         private System.Windows.Forms.GroupBox groupBox6;
+        private System.Windows.Forms.Panel panel1;
     }
 }
 

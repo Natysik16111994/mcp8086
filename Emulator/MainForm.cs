@@ -19,13 +19,15 @@ namespace Emulator
         {
             InitializeComponent();
 
-            // Ввыводим и располагаем формы
+            // Выводим и располагаем формы
             program = new ProgramForm();
+            program.MdiParent = this;
             program.Location = this.Location;
             program.Left += this.Size.Width;
             program.Top += this.Size.Height;
             program.Show();
 
+            /*
             debug = new DebugForm();
             debug.Location = this.Location;
             debug.Top += this.Size.Height;
@@ -34,7 +36,7 @@ namespace Emulator
             output = new OutputForm();
             output.Location = this.Location;
             output.Left += this.Size.Width;
-            output.Show();
+            output.Show();*/
 
             // Записываем значения регистров
             /*AX.Set(0, true); AX.Set(3, true); AX.Set(10, true); AX.Set(13, true);
@@ -63,37 +65,14 @@ namespace Emulator
             Console.WriteLine(R.GetFlag(Register.Flags.DF));*/
 
             Processor processor = new Processor();
-            //processor.Mov(processor.AX, processor.BX);
-            //Console.WriteLine(processor.AX.ToString());
-            /*
-            Register s = new Register();
-            s.Set("A4BF");
-            Console.WriteLine(s.ToString());
-            Console.WriteLine(s.GetAll());*/
-            /*
-            var a = Number.HexToBin("A4BF");
-            Console.WriteLine(Number.BinToString(a));
-            Console.WriteLine(Number.BinToHex(a));
 
-            var b = Number.DecToBin("132");
-            Console.WriteLine(Number.BinToString(b));
-            Console.WriteLine(Number.BinToDec(b));
-
-            processor.Mov(processor.AX, "33FF");
-            processor.Mov(processor.BX, processor.AX);
-            Console.WriteLine(Number.BinToHex(processor.AX.Value));
-            Console.WriteLine(Number.BinToHex(processor.BX.Value));*/
-
-            //var c = Number.OctalToDec("21");
-            //Console.WriteLine(Number.);
-            //Console.WriteLine(Number.BinToString(c));
-            //Console.WriteLine(Number.BinToOctal(c));
-
-            Number a = new Number(999);
+            Number a = new Number(20);
             Console.WriteLine(a.Hex);
             Console.WriteLine(a.Oct);
             Console.WriteLine(a.Bin);
 
+            a.Div("10", 16);
+            Console.WriteLine(a.Hex);
         }
 
         // Кнопки в меню
