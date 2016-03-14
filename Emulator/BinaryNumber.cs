@@ -7,9 +7,13 @@ namespace Emulator
     class BinaryNumber
     {
         public const int MaxUnsignedDecimal = 65535;
+
         public bool OverflowFlag = false;
         public bool CarryFlag = false;
+        public bool PrerFlag = false;
 
+        private bool[] HighMul = BinaryNumber.Zero;
+        private bool[] HighDiv = BinaryNumber.Zero;
         private bool[] number = BinaryNumber.Zero;
 
         // Конструктор
@@ -33,9 +37,9 @@ namespace Emulator
             }
             get
             {
-                int d = 0;
-                for (int i = 0; i < 16; i++) if (this.number[i]) d += Convert.ToInt32(Math.Pow(2, 16 - i - 1));
-                return d;
+                long d = 0;
+                for (int i = 0; i < 16; i++) if (this.number[i]) d += Convert.ToInt64(Math.Pow(2, 16 - i - 1));
+                return (int) d;
             }
         }
 
@@ -46,6 +50,49 @@ namespace Emulator
             {
                 return BinaryNumber.GetBinaryString(this.number);
             }
+            set
+            {
+                this.number = BinaryNumber.Zero;
+                int l = 15;
+                for (int i = value.Length - 1; i >= 0 && l >= 0; i--)
+                {
+                    this.number[l] = value.Substring(i, 1) == "1";
+                    l--;
+                }
+            }
+        }
+
+        // Высокая часть для умножения
+        public bool[] HighPartMul
+        {
+            get
+            {
+                return this.HighMul;
+            }
+        }
+
+        // Высокая часть для деления
+        public bool[] HighPartDiv
+        {
+            set
+            {
+                this.HighDiv = value;
+            }
+        }
+
+        public bool[] Number
+        {
+            get
+            {
+                return this.number;
+            }
+        }
+        
+
+        // Очищает заданный массив
+        public static void MakeZero(bool[] pointer)
+        {
+            for (int i = 0; i < pointer.Length; i++) pointer[i] = false;
         }
 
         // Возвращает нуль
@@ -109,6 +156,7 @@ namespace Emulator
             return a;
         }
 
+        // Оператор вычитания
         public static BinaryNumber operator -(BinaryNumber a, int b)
         {
             bool[] an = a.number;
@@ -161,20 +209,91 @@ namespace Emulator
             return a;
         }
 
+        // Оператор вычитания
         public static BinaryNumber operator -(BinaryNumber a, BinaryNumber b)
         {
             return a -= b.Decimal;
         }
 
-        private static string GetBinaryString(bool[] bin)
+        // Оператор умножения
+        public static BinaryNumber operator *(BinaryNumber a, int b)
+        {
+            int result = a.Decimal * b;
+            bool overflow = result > Math.Pow(2, 16) - 1;
+            a.OverflowFlag = a.CarryFlag = overflow;
+
+            bool[] res = BinaryNumber.GetBinary32(result);
+            BinaryNumber.MakeZero(a.number);
+            int l = 15;
+            for (int i = res.Length - 1; i >= 0 && l >= 0; i--)
+            {
+                a.number[l] = res[i];
+                l--;
+            }
+            // При переполении, переход на High
+            if (overflow) 
+            {
+                a.HighMul = BinaryNumber.Zero;
+                l = 15;
+                for (int i = res.Length - 17; i >= 0 && l >= 0; i--)
+                {
+                    a.HighMul[l] = res[i];
+                    l--;
+                }
+            }
+            return a;
+        }
+
+        // Оператор умножения
+        public static BinaryNumber operator *(BinaryNumber a, BinaryNumber b)
+        {
+            return a * b.Decimal; 
+        }
+
+        // Оператор деления
+        public static BinaryNumber operator /(BinaryNumber a, int b)
+        {
+            int dec = BinaryNumber.GetDecimal(a.HighDiv, a.number) / b;
+            a.HighDiv = BinaryNumber.Zero;
+            // флаг прерывания
+            if (b == 0)
+            {
+                a.PrerFlag = true;
+                return a;
+            }
+            a.number = BinaryNumber.GetBinary(dec);
+            return a;
+        }
+
+        // Оператор деления
+        public static BinaryNumber operator /(BinaryNumber a, BinaryNumber b)
+        {
+            return a / b.Decimal;
+        }
+        
+        // Получает двоичное представление из массива
+        public static string GetBinaryString(bool[] bin)
         {
             string s = "";
             for (int i = 0; i < 16; i++) s += bin[i] ? "1" : "0";
             return s;
         }
 
+        // Преобразует десятичное в 32-битное двоичное
+        public static bool[] GetBinary32(int dec)
+        {
+            List<bool> bin = new List<bool>();
+            while (dec > 0)
+            {
+                bin.Insert(bin.Count, dec % 2 == 1);
+                dec /= 2;
+            }
+            bin.Reverse();
+            return bin.ToArray();
+        }
+
         // Преобразует десятичное число в двоичное
-        private static bool[] GetBinary(int dec)
+        public static bool[] GetBinary(int dec)
         {
             bool[] bin = BinaryNumber.Zero;
             int n = dec > BinaryNumber.MaxUnsignedDecimal ? 0 : dec;
@@ -189,19 +308,34 @@ namespace Emulator
         }
 
         // Перевод числа в десятичное
-        private static int GetDecimal(string n, int b)
+        public static int GetDecimal(string n, int b)
         {
             const string table = "ABCDEF";
-            int m, d = 0;
+            int m;
+            long d = 0;
             for (int i = 0; i < n.Length; i++)
             {
                 if(!int.TryParse(n.Substring(i, 1), out m))
                 {
                     m = 10 + table.IndexOf(n.Substring(i, 1).ToUpper());
                 }
-                d += m * Convert.ToInt32(Math.Pow(b, n.Length - i - 1));
+                d += m * Convert.ToInt64(Math.Pow(b, n.Length - i - 1));
             }
-            return d;
+            return (int) d;
+        }
+
+        // Перевод числа в десятичное
+        public static int GetDecimal(params bool[][] bin)
+        {
+            string a = "";
+            for (int i = 0; i < bin.Length; i++)
+            {
+                for (int j = 0; j < bin[i].Length; j++)
+                {
+                    a += bin[i][j] ? "1" : "0";
+                }
+            }
+            return BinaryNumber.GetDecimal(a, 2);
         }
     }
 }

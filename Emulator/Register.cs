@@ -7,7 +7,7 @@ namespace Emulator
     // Класс Регистр
     class Register
     {
-        public Number Value;
+        public BinaryNumber Value;
 
         // Флаги
         public enum Flags
@@ -26,50 +26,47 @@ namespace Emulator
         // Конструктор Регистр. Обнуляем все 16 бит
         public Register()
         {
-            Value = new Number(0);
+            Value = new BinaryNumber(0);
         }
         
         // Разделяем 16 битный регистр на два других по 8 бит 
         // Записываем старший регистр (high)
         public string GetHigh()
         {
-            return Value.Bin.Substring(0, 8);
+            return Value.Binary.Substring(0, 8);
         }
 
         public string GetLow()
         {
-            return Value.Bin.Substring(8, 8);
+            return Value.Binary.Substring(8, 8);
         }
 
         public string GetAll()
         {
-            return Value.Bin;
+            return Value.Binary;
         }
 
         // Сдвиг влево на 1 бит 
         public void Shl()
         {
-            Value.Dec /= 2;
+            Value /= 2;
         }
 
         // Сдвиг вправо на 1 бит
         public void Shr()
         {
-            Value.Dec *= 2;
+            Value *= 2;
         }
-
 
         public bool Get(int a)
         {
-            return Value.Bin.Substring(a, 1) == "1";
+            return Value.Number[a];
         }
 
         // Значения битов (разрядов)
         public void Set(int a, bool b)
         {
-            string s = Value.Bin;
-            s = s.Substring(0, a)+ (b ? "1" : "0") + s.Substring(a + 1);
-            Value.Bin = s;
+            Value.Number[a] = b;
         }
         
         // Значения флагов 
@@ -81,6 +78,11 @@ namespace Emulator
         public void SetFlag(Flags f, bool state)
         {
             Set((int)f, state);
+        }
+
+        public void SetFlag(bool state, params Flags[] f)
+        {
+            for (int i = 0; i < f.Length; i++) Set((int)f[i], state);
         }
 
         // Выставляет флаги
@@ -96,11 +98,11 @@ namespace Emulator
             IF = 7,
             TF = 8*/
 
-            flags.SetFlag(Flags.CF, Value.IsCarryFlag());
-            flags.SetFlag(Flags.OF, Value.Dec > 32767);
-            flags.SetFlag(Flags.ZF, Value.Dec == 0);
-            flags.SetFlag(Flags.SF, Value.Bin.Substring(0, 1) == "1");
-            flags.SetFlag(Flags.PF, Value.Dec % 2 == 0);
+            flags.SetFlag(Flags.CF, Value.CarryFlag);
+            flags.SetFlag(Flags.OF, Value.OverflowFlag);
+            flags.SetFlag(Flags.ZF, Value.Decimal == 0);
+            flags.SetFlag(Flags.SF, Value.Number[0]);
+            flags.SetFlag(Flags.PF, Value.Decimal % 2 == 0);
             //flags.SetFlag(Flags.AF, ...);
         }
     }
