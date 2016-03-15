@@ -84,6 +84,7 @@ namespace Emulator
                 }
             }
             dest.Value.Decimal = (pos == -1 ? 0 : pos);
+            dest.UpdateFlags(this.Flags);
             this.Flags.SetFlag((pos == -1), Register.Flags.ZF);
         }
 
@@ -100,8 +101,175 @@ namespace Emulator
                 }
             }
             dest.Value.Decimal = (pos == -1 ? 0 : pos);
+            dest.UpdateFlags(this.Flags);
             this.Flags.SetFlag((pos == -1), Register.Flags.ZF); 
         }
+
+        //-------------------------------------------------------------------
+        /** BSR **/
+        public void Bsr(Register dest, Register src)
+        {
+            int pos = -1;
+            for (int i = 0; i < src.Value.Number.Length; i++)
+            {
+                if (src.Value.Number[i])
+                {
+                    pos = src.Value.Number.Length - i - 1;
+                    break;
+                }
+            }
+            dest.Value.Decimal = (pos == -1 ? 0 : pos);
+            dest.UpdateFlags(this.Flags);
+            this.Flags.SetFlag((pos == -1), Register.Flags.ZF);
+        }
+
+        public void Bsr(Register dest, string n, int b)
+        {
+            bool[] c = BinaryNumber.GetBinary(BinaryNumber.GetDecimal(n, b));
+            int pos = -1;
+            for (int i = 0; i < c.Length; i++)
+            {
+                if (c[i])
+                {
+                    pos = c.Length - i - 1;
+                    break;
+                }
+            }
+            dest.Value.Decimal = (pos == -1 ? 0 : pos);
+            dest.UpdateFlags(this.Flags);
+            this.Flags.SetFlag((pos == -1), Register.Flags.ZF);
+        }
+
+        /** BT **/
+        public void Bt(Register src, int index)
+        {
+            int i = src.Value.Number.Length - index - 1;
+            bool b = src.Value.Number[i];
+            src.UpdateFlags(this.Flags);
+            this.Flags.SetFlag(b, Register.Flags.CF);
+        }
+
+        /** BTC **/
+        public void Btc(Register src, int index)
+        {
+            int i = src.Value.Number.Length - index - 1;
+            bool b = src.Value.Number[i];
+            src.Value.Number[i] = (src.Value.Number[i] == true ? false : true);
+            this.Flags.SetFlag(b, Register.Flags.CF);
+        }
+
+        /** BTR **/
+        public void Btr(Register src, int index)
+        {
+            int i = src.Value.Number.Length - index - 1;
+            bool b = src.Value.Number[i];
+            src.Value.Number[i] = false;
+            this.Flags.SetFlag(b, Register.Flags.CF);
+        }
+
+        /** BTS **/
+        public void Bts(Register src, int index)
+        {
+            int i = src.Value.Number.Length - index - 1;
+            bool b = src.Value.Number[i];
+            src.Value.Number[i] = true;
+            src.UpdateFlags(this.Flags);
+            this.Flags.SetFlag(b, Register.Flags.CF);
+        }
+
+        /** CALL **/ //****************************************************?
+        public void Call()
+        { 
+            
+        }
+
+        /** CBW ?**/
+        public void Cbw(Register a)
+        {   
+            int c = 0; bool m = false;
+            c = a.Value.Number.Length / 2;
+            m = a.Value.Number[c];
+            for (int i = 0; i < c; i++) a.Value.Number[i] = m;
+        }
+
+        /** CLC **/
+        public void Clc()
+        {
+            this.Flags.SetFlag(false, Register.Flags.CF);
+        }
+
+        /** CLD **/
+        public void Cld()
+        {
+            this.Flags.SetFlag(false, Register.Flags.DF);
+        }
+
+        /** CLI **/
+        public void Cli()
+        {
+            this.Flags.SetFlag(false, Register.Flags.IF);
+        }
+
+        /** CMC **/
+        public void Cmc()
+        {
+            this.Flags.SetFlag(!this.Flags.GetFlag(Register.Flags.CF), Register.Flags.CF);
+        }
+
+        // CDQ вроде не нужен
+
+        /** CMP **/ //******************************************************?
+        public void Cmp()
+        {
+
+        }
+
+        /** CWD **/
+        public void Cwd()
+        {
+            for (int i = 0; i < DX.Value.Number.Length; i++) DX.Value.Number[i] = AX.Value.Number[0];    
+        }
+
+        /** DEC **/
+        public void Dec(Register a)
+        {
+            a.Value.Decimal = a.Value.Decimal - 1;
+            a.UpdateFlags(this.Flags);
+        }
+
+        /** DIV **/ //************************************************** 
+        public void Div(Register delim, Register delit)
+        {
+          
+        }
+
+        /** IDIV **/ //**********************************************
+        public void Idiv(Register delim, Register delit)
+        {
+
+        }
+
+        /** ENTER **/ //*******************************************
+        public void Enter(Register delim, Register delit)
+        {
+
+        }
+
+        /** IMUL **/ //******************************************
+        public void Imul(Register delim, Register delit)
+        {
+
+        }
+
+        /** INC **/
+        public void Inc(Register a)
+        {
+            a.Value.Decimal = a.Value.Decimal + 1;
+            a.UpdateFlags(this.Flags);
+        }
+
+       
+        //-----------------------------------------------------
 
         public void Mov(Register a, Register b)
         {

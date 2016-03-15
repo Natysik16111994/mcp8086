@@ -74,15 +74,27 @@ namespace Emulator
             Processor processor = new Processor();
             // 65535
 
-            processor.AX.Value.Decimal = 2048;
+            processor.AX.Value.Binary = "1011000010000000";
             processor.Mov(processor.BX, processor.AX);
-            processor.Bsf(processor.AX, processor.BX);
+            //processor.Bsf(processor.AX, processor.BX);
             Console.WriteLine(processor.BX.Value.Binary);
-
-            Console.WriteLine(processor.AX.Value.Decimal);
+            //Console.WriteLine(processor.AX.Value.Decimal);
+            
+            processor.Bts(processor.AX, 13);
+           // processor.Clc();
+           // processor.Cmc();
+           // processor.Cbw(processor.AX);
+            //processor.Cwd();
+            Console.WriteLine(processor.AX.Value.Binary);
+            //Console.WriteLine(processor.AX.Value.Decimal);
+            //processor.Dec(processor.AX);
+            //Console.WriteLine(processor.AX.Value.Decimal);
+            Console.WriteLine(processor.DX.Value.Binary);
+            
             Console.WriteLine(string.Format("ZF: {0}", processor.IsFlag(Register.Flags.ZF)));
             Console.WriteLine(string.Format("CF: {0}", processor.IsFlag(Register.Flags.CF)));
             Console.WriteLine(string.Format("OF: {0}", processor.IsFlag(Register.Flags.OF)));
+
 
             /*BinaryNumber a = new BinaryNumber(65365);
             BinaryNumber b = new BinaryNumber(2);
