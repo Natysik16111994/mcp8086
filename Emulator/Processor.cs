@@ -268,7 +268,71 @@ namespace Emulator
             a.UpdateFlags(this.Flags);
         }
 
-       
+        /** J(COND) **/ //*****************************************
+        public void Jcond(Register delim, Register delit)
+        {
+
+        }
+
+        /** JMP **/ //*****************************************
+        public void Jmp(Register delim, Register delit)
+        {
+
+        }
+
+        /** LAHF **/
+        public void Lahf()
+        {
+            AX.Value.Number[0] = this.Flags.GetFlag(Register.Flags.SF);
+            AX.Value.Number[1] = this.Flags.GetFlag(Register.Flags.ZF);
+            AX.Value.Number[2] = false;
+            AX.Value.Number[3] = this.Flags.GetFlag(Register.Flags.AF);
+            AX.Value.Number[4] = false;
+            AX.Value.Number[5] = this.Flags.GetFlag(Register.Flags.PF);
+            AX.Value.Number[6] = true;
+            AX.Value.Number[7] = this.Flags.GetFlag(Register.Flags.CF);
+        }
+
+        /** LEAVE **/
+        //*****************************************
+        public void Leave()
+        {
+
+        }
+
+        /** LOOP **/ //*****************************************(после RET)
+        public void Loop()
+        {
+
+        }
+
+        /** LOOPNZ **/ //*****************************************(после RET)
+        public void Loopnz()
+        {
+
+        }
+
+        /** LOOPZ **/ //*****************************************(после RET)
+        public void Loopz()
+        {
+
+        }
+
+        /** MOVSX **/ //????????????????????????????
+        public void Movsx(Register dest, Register src)
+        {
+            for (int i = 0; i < dest.Value.Number.Length / 2; i++) dest.Value.Number[i] = src.Value.Number[0];
+            for (int i = dest.Value.Number.Length/2; i < dest.Value.Number.Length; i++) dest.Value.Number[i] = src.Value.Number[i];
+            dest.UpdateFlags(this.Flags);
+        }
+
+        /** MOVZX **/ //????????????????????????????
+        public void Movzx(Register dest, Register src)
+        {
+            for (int i = 0; i < dest.Value.Number.Length / 2; i++) dest.Value.Number[i] = false;
+            for (int i = dest.Value.Number.Length / 2; i < dest.Value.Number.Length; i++) dest.Value.Number[i] = src.Value.Number[i];
+            dest.UpdateFlags(this.Flags);
+        }
         //-----------------------------------------------------
 
         public void Mov(Register a, Register b)
@@ -283,7 +347,7 @@ namespace Emulator
 
         public bool IsFlag(Register.Flags f)
         {
-            return this.Flags.GetFlag(f);
+            return this.Flags.GetFlag(f);         
         }
     }
 }

@@ -79,17 +79,19 @@ namespace Emulator
             //processor.Bsf(processor.AX, processor.BX);
             Console.WriteLine(processor.BX.Value.Binary);
             //Console.WriteLine(processor.AX.Value.Decimal);
-            
-            processor.Bts(processor.AX, 13);
+            //processor.Bts(processor.AX, 13);
+            //processor.Lahf();
            // processor.Clc();
            // processor.Cmc();
            // processor.Cbw(processor.AX);
             //processor.Cwd();
             Console.WriteLine(processor.AX.Value.Binary);
+            //processor.Movsx(processor.BX processor.AX);
+            //Console.WriteLine(processor.BX.Value.Binary);
             //Console.WriteLine(processor.AX.Value.Decimal);
             //processor.Dec(processor.AX);
             //Console.WriteLine(processor.AX.Value.Decimal);
-            Console.WriteLine(processor.DX.Value.Binary);
+           // Console.WriteLine(processor.DX.Value.Binary);
             
             Console.WriteLine(string.Format("ZF: {0}", processor.IsFlag(Register.Flags.ZF)));
             Console.WriteLine(string.Format("CF: {0}", processor.IsFlag(Register.Flags.CF)));
