@@ -74,7 +74,7 @@ namespace Emulator
             Processor processor = new Processor();
             // 65535
 
-            processor.AX.Value.Binary = "1011000010000000";
+            processor.AX.Value.Binary = "1011000010001000";
             processor.Mov(processor.BX, processor.AX);
             //processor.Bsf(processor.AX, processor.BX);
             Console.WriteLine(processor.BX.Value.Binary);
@@ -90,7 +90,16 @@ namespace Emulator
             //Console.WriteLine(processor.BX.Value.Binary);
             //Console.WriteLine(processor.AX.Value.Decimal);
             //processor.Dec(processor.AX);
-            //Console.WriteLine(processor.AX.Value.Decimal);
+            processor.Neg(processor.BX);
+            Console.WriteLine(processor.BX.Value.Binary);
+            //processor.Or(processor.AX, processor.BX);
+            //processor.Or(processor.AX,"101001001",2);
+            //processor.Sar(processor.AX, 1);
+            Console.WriteLine(processor.AX.Value.Binary);
+            Console.WriteLine(processor.AX.Value.Decimal);
+            processor.Sbb(processor.AX, processor.BX);
+            Console.WriteLine(processor.AX.Value.Decimal);
+            Console.WriteLine(processor.BX.Value.Decimal);
            // Console.WriteLine(processor.DX.Value.Binary);
             
             Console.WriteLine(string.Format("ZF: {0}", processor.IsFlag(Register.Flags.ZF)));
