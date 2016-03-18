@@ -430,27 +430,35 @@ namespace Emulator
         {
             bool c = false;
             int m = a.Value.Number.Length;
-            c = a.Value.Number[0]; 
+            bool z = a.Value.Number[0]; 
             for (int j = 0; j < n; j++)
-                for (int i = 1; i < m; i++) a.Value.Number[i - 1] = a.Value.Number[i];
+                for (int i = 1; i < m; i++)
+                {
+                    c = a.Value.Number[0];
+                    a.Value.Number[i - 1] = a.Value.Number[i];
+                }           
             a.Value.Number[m - 1] = this.Flags.GetFlag(Register.Flags.CF);
             a.UpdateFlags(this.Flags);
             this.Flags.SetFlag(c, Register.Flags.CF);
-            this.Flags.SetFlag((a.Value.Number[0] != this.Flags.GetFlag(Register.Flags.CF)), Register.Flags.OF);
+            this.Flags.SetFlag((a.Value.Number[0] != z), Register.Flags.OF);
         }
 
          /** RCR **/
          public void Rcr(Register a, int n)
          {
              bool c = false;
+             bool z = a.Value.Number[0];
              int m = a.Value.Number.Length;
-             c = a.Value.Number[m - 1];
              for (int j = 0; j < n; j++)
-                 for (int i = (m - 2); i >= 0; i--) a.Value.Number[i + 1] = a.Value.Number[i];
+                 for (int i = (m - 2); i >= 0; i--)
+                 {
+                     c = a.Value.Number[m - 1];
+                     a.Value.Number[i + 1] = a.Value.Number[i];
+                 } 
              a.Value.Number[0] = this.Flags.GetFlag(Register.Flags.CF);
              a.UpdateFlags(this.Flags);
              this.Flags.SetFlag(c, Register.Flags.CF);
-             this.Flags.SetFlag((a.Value.Number[0] != this.Flags.GetFlag(Register.Flags.CF)), Register.Flags.OF);
+             this.Flags.SetFlag((a.Value.Number[0] != z), Register.Flags.OF);
          }
 
          /** RET **/ //*****************************************
@@ -463,28 +471,36 @@ namespace Emulator
          public void Rol(Register a, int n)
          {
              bool c = false;
+             bool z = a.Value.Number[0];
              int m = a.Value.Number.Length;
-             c = a.Value.Number[0];
              for (int j = 0; j < n; j++)
-                 for (int i = 1; i < m; i++) a.Value.Number[i - 1] = a.Value.Number[i];
+                 for (int i = 1; i < m; i++)
+                 {
+                     c = a.Value.Number[0];
+                     a.Value.Number[i - 1] = a.Value.Number[i];
+                 }
              a.Value.Number[m - 1] = c;
              a.UpdateFlags(this.Flags);
              this.Flags.SetFlag(c, Register.Flags.CF);
-             this.Flags.SetFlag((a.Value.Number[0] != this.Flags.GetFlag(Register.Flags.CF)), Register.Flags.OF);
+             this.Flags.SetFlag((a.Value.Number[0] != z), Register.Flags.OF);
          }
 
          /** ROR **/
          public void Ror(Register a, int n)
          {
              bool c = false;
+             bool z = a.Value.Number[0];
              int m = a.Value.Number.Length;
-             c = a.Value.Number[m - 1];
              for (int j = 0; j < n; j++)
-                 for (int i = (m - 2); i >= 0; i--) a.Value.Number[i + 1] = a.Value.Number[i];
+                 for (int i = (m - 2); i >= 0; i--)
+                 {
+                     c = a.Value.Number[m - 1];
+                     a.Value.Number[i + 1] = a.Value.Number[i];
+                 } 
              a.Value.Number[0] = c;
              a.UpdateFlags(this.Flags);
              this.Flags.SetFlag(c, Register.Flags.CF);
-             this.Flags.SetFlag((a.Value.Number[0] != this.Flags.GetFlag(Register.Flags.CF)), Register.Flags.OF);
+             this.Flags.SetFlag((a.Value.Number[0] != z), Register.Flags.OF);
          }
 
          /** SAHF **/ //*****************************************
@@ -497,14 +513,20 @@ namespace Emulator
          public void Sal(Register a, int n)
          {
              bool c = false;
+             bool z = a.Value.Number[0];
              int m = a.Value.Number.Length;
-             c = a.Value.Number[0];
              for (int j = 0; j < n; j++)
-                 for (int i = 1; i < m; i++) a.Value.Number[i - 1] = a.Value.Number[i];
+             {        
+                 for (int i = 1; i < m; i++)
+                 {
+                     c = a.Value.Number[0];
+                     a.Value.Number[i - 1] = a.Value.Number[i];
+                 } 
+             }
              a.Value.Number[m - 1] = false;
              a.UpdateFlags(this.Flags);
              this.Flags.SetFlag(c, Register.Flags.CF);
-             this.Flags.SetFlag((a.Value.Number[0] != this.Flags.GetFlag(Register.Flags.CF)), Register.Flags.OF);
+             this.Flags.SetFlag((a.Value.Number[0] != z), Register.Flags.OF);
          }
 
          /** SAR **/
@@ -512,13 +534,19 @@ namespace Emulator
          {
              int m = a.Value.Number.Length;
              bool b = a.Value.Number[0];
-             bool c = a.Value.Number[m - 1];
+             bool c = false;
              for (int j = 0; j < n; j++)
-                 for (int i = (m - 2); i >= 0; i--) a.Value.Number[i + 1] = a.Value.Number[i];
-             a.Value.Number[0] = b;
-             a.Value.Number[m - 1] = false;
+             {
+                 for (int i = (m - 2); i >= 0; i--) 
+                 {
+                     c = a.Value.Number[m - 1];
+                     a.Value.Number[i + 1] = a.Value.Number[i];
+                 }
+                 a.Value.Number[0] = b;
+             }        
              a.UpdateFlags(this.Flags);
              this.Flags.SetFlag(c, Register.Flags.CF);
+             if (n == 1) this.Flags.SetFlag(false, Register.Flags.OF);
          }
 
          /** SBB **/
@@ -527,10 +555,181 @@ namespace Emulator
              dest.Value.Decimal = dest.Value.Decimal - src.Value.Decimal - ((this.Flags.GetFlag(Register.Flags.CF)) ? 1 : 0);
              dest.UpdateFlags(this.Flags);
          }
-         
-        //-----------------------------------------------------
 
-        public void Mov(Register a, Register b)
+         public void Sbb(Register dest, string n, int b)
+         {
+             bool[] c = BinaryNumber.GetBinary(BinaryNumber.GetDecimal(n, b)); 
+             dest.Value.Decimal = dest.Value.Decimal - BinaryNumber.GetDecimal(c) - ((this.Flags.GetFlag(Register.Flags.CF)) ? 1 : 0);
+             dest.UpdateFlags(this.Flags);
+         }
+
+         /** SHL **/
+         public void Shl(Register a, int n)
+         {
+             Sal(a, n);
+         }
+
+         /** SHLD **/
+         public void Shld(Register dest, Register src, int n)
+         {
+             int m = dest.Value.Number.Length;
+             {
+                 bool c = false;
+                 bool z = dest.Value.Number[0];
+                 for (int j = 0; j < n; j++)
+                 {
+                     for (int i = 1; i < m; i++)
+                     {
+                         c = dest.Value.Number[0];
+                         dest.Value.Number[i - 1] = dest.Value.Number[i];
+                     }
+                     dest.Value.Number[m - 1] = src.Value.Number[m - j - 1];
+                 }
+                 dest.UpdateFlags(this.Flags);
+                 this.Flags.SetFlag(c, Register.Flags.CF);
+                 this.Flags.SetFlag((dest.Value.Number[0] != z && n == 1), Register.Flags.OF);
+             }
+         }
+
+         /** SHR **/
+         public void Shr(Register a, int n)
+         {
+             int m = a.Value.Number.Length;
+             bool c = false;
+             for (int j = 0; j < n; j++)
+             {
+                 for (int i = (m - 2); i >= 0; i--)
+                 {
+                     c = a.Value.Number[0];
+                     a.Value.Number[i + 1] = a.Value.Number[i];
+                 } 
+                 a.Value.Number[0] = false;
+             }   
+             a.UpdateFlags(this.Flags);
+             this.Flags.SetFlag(c, Register.Flags.CF);
+             if (n > 1) this.Flags.SetFlag(false, Register.Flags.OF);
+         }
+
+         /** SHRD **/
+         public void Shrd(Register dest, Register src, int n)
+         {
+             int m = dest.Value.Number.Length;
+             {
+                 bool c = false;
+                 bool z = dest.Value.Number[0];
+                 for (int j = 0; j < n; j++)
+                 {
+                     for (int i = (m - 2); i >= 0; i--)
+                     {
+                         c = dest.Value.Number[m - 1];
+                         dest.Value.Number[i + 1] = dest.Value.Number[i];
+                     }
+                     dest.Value.Number[0] = src.Value.Number[m - j - 1];
+                 }
+                 dest.UpdateFlags(this.Flags);
+                 this.Flags.SetFlag(c, Register.Flags.CF);
+                 this.Flags.SetFlag((dest.Value.Number[0] != z), Register.Flags.OF);
+             }
+         }
+
+         /** STC **/
+         public void Stc()
+         {
+             this.Flags.SetFlag(true, Register.Flags.CF);
+         }
+
+         /** STD **/
+         public void Std()
+         {
+             this.Flags.SetFlag(true, Register.Flags.DF);
+         }
+
+         /** STI **/
+         public void Sti()
+         {
+             this.Flags.SetFlag(true, Register.Flags.IF);
+         }
+
+         /** SUB **/
+         public void Sub(Register a, Register b)
+         {
+             a.Value.Decimal -= b.Value.Decimal;
+             a.UpdateFlags(this.Flags);
+         }
+
+         public void Sub(Register a, string n, int b)
+         {
+             bool[] c = BinaryNumber.GetBinary(BinaryNumber.GetDecimal(n, b));
+             a.Value.Decimal -= BinaryNumber.GetDecimal(c);
+             a.UpdateFlags(this.Flags);
+         }
+
+         /** TEST **/
+         public void Test(Register dest, Register src)
+         {
+             for (int i = 0; i < dest.Value.Number.Length; i++)
+             {
+                 if (dest.Value.Number[i] == true & src.Value.Number[i] == true) dest.Value.Number[i] = true;
+                 else dest.Value.Number[i] = false;
+             }
+             dest.UpdateFlags(this.Flags);
+             this.Flags.SetFlag(false, Register.Flags.OF, Register.Flags.CF);
+
+         }
+
+         public void Test(Register dest, string n, int b)
+         {
+             bool[] c = BinaryNumber.GetBinary(BinaryNumber.GetDecimal(n, b));
+             for (int i = 0; i < dest.Value.Number.Length; i++)
+             {
+                 if (dest.Value.Number[i] == true & c[i] == true) dest.Value.Number[i] = true;
+                 else dest.Value.Number[i] = false;
+             }
+             dest.UpdateFlags(this.Flags);
+             this.Flags.SetFlag(false, Register.Flags.OF, Register.Flags.CF);
+
+         }
+
+         /** XCHG **/
+         public void Xchg(Register a, Register b)
+         {
+             bool[] c = new bool[16];
+             for (int i = (a.Value.Number.Length - 1); i >= 0; i--)
+             {
+                 c[i] = a.Value.Number[i];
+                 a.Value.Number[i] = b.Value.Number[i];
+                 b.Value.Number[i] = c[i];
+             }
+         }
+
+         /** XOR **/
+         public void Xor(Register dest, Register src)
+         {
+             for (int i = 0; i < dest.Value.Number.Length; i++)
+             {
+                 if (dest.Value.Number[i] == src.Value.Number[i]) dest.Value.Number[i] = true;
+                 else dest.Value.Number[i] = false;
+             }
+             dest.UpdateFlags(this.Flags);
+             this.Flags.SetFlag(false, Register.Flags.OF, Register.Flags.CF);
+         }
+
+         public void Xor(Register dest, string n, int b)
+         {
+             bool[] c = BinaryNumber.GetBinary(BinaryNumber.GetDecimal(n, b));
+             for (int i = 0; i < dest.Value.Number.Length; i++)
+             {
+                 if (dest.Value.Number[i] == c[i]) dest.Value.Number[i] = true;
+                 else dest.Value.Number[i] = false;
+             }
+             dest.UpdateFlags(this.Flags);
+             this.Flags.SetFlag(false, Register.Flags.OF, Register.Flags.CF);
+
+         }
+         //-----------------------------------------------------
+
+         /** MOV **/
+         public void Mov(Register a, Register b)
         {
             a.Value.Decimal = b.Value.Decimal;
         }

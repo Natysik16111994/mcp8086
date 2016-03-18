@@ -75,9 +75,10 @@ namespace Emulator
             // 65535
 
             processor.AX.Value.Binary = "1011000010001000";
-            processor.Mov(processor.BX, processor.AX);
+            processor.BX.Value.Binary = "0100010000000101";
+            //processor.Mov(processor.BX, processor.AX);
             //processor.Bsf(processor.AX, processor.BX);
-            Console.WriteLine(processor.BX.Value.Binary);
+            //Console.WriteLine(processor.BX.Value.Binary);
             //Console.WriteLine(processor.AX.Value.Decimal);
             //processor.Bts(processor.AX, 13);
             //processor.Lahf();
@@ -86,20 +87,25 @@ namespace Emulator
            // processor.Cbw(processor.AX);
             //processor.Cwd();
             Console.WriteLine(processor.AX.Value.Binary);
+            Console.WriteLine(processor.BX.Value.Binary);
             //processor.Movsx(processor.BX processor.AX);
             //Console.WriteLine(processor.BX.Value.Binary);
             //Console.WriteLine(processor.AX.Value.Decimal);
             //processor.Dec(processor.AX);
-            processor.Neg(processor.BX);
-            Console.WriteLine(processor.BX.Value.Binary);
+            //processor.Neg(processor.BX);   
             //processor.Or(processor.AX, processor.BX);
             //processor.Or(processor.AX,"101001001",2);
             //processor.Sar(processor.AX, 1);
+            //processor.Shr(processor.AX, 3);
+           // processor.Test(processor.AX, processor.BX);
+            //processor.Xchg(processor.AX, processor.BX);
+            processor.Shld(processor.AX, processor.BX, 3);
+            //processor.Rcl(processor.AX, 1);
             Console.WriteLine(processor.AX.Value.Binary);
             Console.WriteLine(processor.AX.Value.Decimal);
-            processor.Sbb(processor.AX, processor.BX);
-            Console.WriteLine(processor.AX.Value.Decimal);
-            Console.WriteLine(processor.BX.Value.Decimal);
+            //processor.Sbb(processor.AX, "13", 10);
+            //Console.WriteLine(processor.AX.Value.Decimal);
+            //Console.WriteLine(processor.BX.Value.Decimal);
            // Console.WriteLine(processor.DX.Value.Binary);
             
             Console.WriteLine(string.Format("ZF: {0}", processor.IsFlag(Register.Flags.ZF)));
