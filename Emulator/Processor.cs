@@ -216,12 +216,13 @@ namespace Emulator
             this.Flags.SetFlag(!this.Flags.GetFlag(Register.Flags.CF), Register.Flags.CF);
         }
 
-        // CDQ вроде не нужен
-
-        /** CMP **/ //******************************************************?
-        public void Cmp()
+        /** CMP **/ 
+        public void Cmp(Register dest, Register src)
         {
-
+            int b = dest.Value.Decimal;
+            dest.Value.Decimal = Math.Abs(dest.Value.Decimal - src.Value.Decimal);
+            dest.UpdateFlags(this.Flags);
+            dest.Value.Decimal = b;
         }
 
         /** CWD **/
@@ -256,9 +257,14 @@ namespace Emulator
         }
 
         /** IMUL **/ //******************************************
-        public void Imul(Register delim, Register delit)
+        public void Imul(Register a)
         {
-
+           
+        }
+        
+        public void Imul(Register a, Register b)
+        {
+            
         }
 
         /** INC **/
@@ -467,7 +473,7 @@ namespace Emulator
 
          }
 
-         /** ROL **/ //*****************************************
+         /** ROL **/ 
          public void Rol(Register a, int n)
          {
              bool c = false;
@@ -503,10 +509,13 @@ namespace Emulator
              this.Flags.SetFlag((a.Value.Number[0] != z), Register.Flags.OF);
          }
 
-         /** SAHF **/ //*****************************************
+         /** SAHF **/ 
          public void Shahf()
          {
-
+             for (int i = 0; i < AX.Value.Number.Length / 2; i++)
+             {
+                 if ( i != 1 && i != 3 && i != 5) this.Flags.Value.Number[i] = AX.Value.Number[i];
+             }
          }
 
          /** SAL **/

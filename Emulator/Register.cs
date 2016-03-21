@@ -12,15 +12,15 @@ namespace Emulator
         // Флаги
         public enum Flags
         {
-            CF = 0,
-            OF = 1,
-            ZF = 2,
-            SF = 3,
-            PF = 4,
-            AF = 5,
-            DF = 6,
-            IF = 7,
-            TF = 8
+            CF = 15,
+            PF = 13,
+            AF = 11,
+            ZF = 9,
+            SF = 8,
+            TF = 7,
+            IF = 6,
+            DF = 5,  
+            OF = 4   
         };
 
         // Конструктор Регистр. Обнуляем все 16 бит
@@ -84,6 +84,11 @@ namespace Emulator
         {
             for (int i = 0; i < f.Length; i++) Set((int)f[i], state);
         }
+        /*
+        public void SetFlag(bool state, params int[] f)
+        {
+            for (int i = 0; i < f.Length; i++) Set(f[i], state);
+        }*/
 
         // Выставляет флаги
         public void UpdateFlags(Register flags)
