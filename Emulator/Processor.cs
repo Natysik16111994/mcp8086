@@ -8,6 +8,7 @@ namespace Emulator
     class Processor
     {
         public Register AX, BX, CX, DX, SI, DI, BP, SP, CS, DS, ES, SS, IP, Flags;
+        public Stack stack;
 
         public Processor()
         {
@@ -25,6 +26,8 @@ namespace Emulator
             SS = new Register();
             IP = new Register();
             Flags = new Register();
+
+            stack = new Stack();
         }
 
         /** ADD **/
@@ -275,9 +278,10 @@ namespace Emulator
         }
 
         /** J(COND) **/ //*****************************************
-        public void Jcond(Register delim, Register delit)
+        /** JZ/JE **/
+        public void JZ(Register delim, Register delit)
         {
-
+            
         }
 
         /** JMP **/ //*****************************************
