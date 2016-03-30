@@ -279,6 +279,14 @@ namespace Emulator
             return s;
         }
 
+        // Получает двоичное представление из массива (8 бит)______________________________________?
+        public static string GetBinaryString8(bool[] bin)
+        {
+            string s = "";
+            for (int i = 0; i < 8; i++) s += bin[i] ? "1" : "0";
+            return s;
+        }
+
         // Преобразует десятичное в 32-битное двоичное
         public static bool[] GetBinary32(int dec)
         {

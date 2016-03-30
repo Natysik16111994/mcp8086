@@ -27,7 +27,7 @@ namespace Emulator
             IP = new Register();
             Flags = new Register();
 
-            stack = new Stack();
+            stack = new Stack(SP);
         }
 
         /** ADD **/

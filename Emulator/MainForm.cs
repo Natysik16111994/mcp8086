@@ -99,19 +99,20 @@ namespace Emulator
             //processor.Shr(processor.AX, 3);
            // processor.Test(processor.AX, processor.BX);
             //processor.Xchg(processor.AX, processor.BX);
-            processor.Shld(processor.AX, processor.BX, 3);
+            //processor.Shld(processor.AX, processor.BX, 3);
             //processor.Rcl(processor.AX, 1);
-            Console.WriteLine(processor.AX.Value.Binary);
-            Console.WriteLine(processor.AX.Value.Decimal);
+            //Console.WriteLine(processor.AX.Value.Binary);
+            //Console.WriteLine(processor.AX.Value.Decimal);
             //processor.Sbb(processor.AX, "13", 10);
             //Console.WriteLine(processor.AX.Value.Decimal);
             //Console.WriteLine(processor.BX.Value.Decimal);
            // Console.WriteLine(processor.DX.Value.Binary);
-            
+            processor.stack.Push(processor.AX);
+            Console.WriteLine("SP: ", processor.SP.Value.Binary);
+
             Console.WriteLine(string.Format("ZF: {0}", processor.IsFlag(Register.Flags.ZF)));
             Console.WriteLine(string.Format("CF: {0}", processor.IsFlag(Register.Flags.CF)));
             Console.WriteLine(string.Format("OF: {0}", processor.IsFlag(Register.Flags.OF)));
-
 
             /*BinaryNumber a = new BinaryNumber(65365);
             BinaryNumber b = new BinaryNumber(2);
