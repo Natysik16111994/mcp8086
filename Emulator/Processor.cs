@@ -27,7 +27,7 @@ namespace Emulator
             IP = new Register();
             Flags = new Register();
 
-            stack = new Stack(SP);
+            stack = new Stack(this);
         }
 
         /** ADD **/
@@ -241,16 +241,76 @@ namespace Emulator
             a.UpdateFlags(this.Flags);
         }
 
-        /** DIV **/ //************************************************** 
-        public void Div(Register delim, Register delit)
-        {
-          
+        /** DIV **/ 
+        public void Div(Register delit, bool half = false, bool high = false) // high указывает часть (верхняя или нижняя)
+        {   // если half = false, то слово (DX:AX)
+            if (!half)
+            {
+                int d = 0;
+                double dxax = 0;
+                for (int i = 0; i < AX.Value.Number.Length; i++)
+                {
+                    int ax = (AX.Value.Number[i] ? 1 : 0);
+                    int dx = (DX.Value.Number[i] ? 1 : 0);
+                    dxax += ax * Math.Pow(2, AX.Value.Number.Length - i - 1);
+                    dxax += dx * Math.Pow(2, AX.Value.Number.Length + DX.Value.Number.Length - i - 1);
+                }
+                d = delit.Value.Decimal;
+                AX.Value.Decimal = Convert.ToInt32(dxax) / d;
+                DX.Value.Decimal = Convert.ToInt32(dxax) % d;
+                AX.UpdateFlags(this.Flags);
+            }
+            // иначе байт(AX)
+            else
+            {
+                int ax = AX.Value.Decimal;
+                int d = 0;
+                if (high) d = BinaryNumber.GetDecimal(delit.GetHigh(), 2);
+                else d = BinaryNumber.GetDecimal(delit.GetLow(), 2);
+                AX.LowDecimal = ax / d;
+                AX.HighDecimal = ax % d;
+                AX.UpdateFlags(this.Flags);
+            }
         }
 
-        /** IDIV **/ //**********************************************
-        public void Idiv(Register delim, Register delit)
+        // Для чисел
+        public void Div(string n, int b)
         {
+            int c = BinaryNumber.GetDecimal(n, b);
+            // если число превышает 255, то слово (DX:AX)
+            if (c > (Math.Pow(2,8) - 1))
+            {
+                double dxax = 0;
+                for (int i = 0; i < AX.Value.Number.Length; i++)
+                {
+                    int ax = (AX.Value.Number[i] ? 1 : 0);
+                    int dx = (DX.Value.Number[i] ? 1 : 0);
+                    dxax += ax * Math.Pow(2, AX.Value.Number.Length - i - 1);
+                    dxax += dx * Math.Pow(2, AX.Value.Number.Length + DX.Value.Number.Length - i - 1);
+                }
+                AX.Value.Decimal = Convert.ToInt32(dxax) / BinaryNumber.GetDecimal(n, b);
+                DX.Value.Decimal = Convert.ToInt32(dxax) % BinaryNumber.GetDecimal(n, b);
+                AX.UpdateFlags(this.Flags);
+            }
+            // иначе байт(AX)
+            else
+            {
+                int ax = AX.Value.Decimal;
+                AX.LowDecimal = ax / BinaryNumber.GetDecimal(n, b);
+                AX.HighDecimal = ax % BinaryNumber.GetDecimal(n, b);
+                AX.UpdateFlags(this.Flags);
+            }
+        }
 
+        /** IDIV **/ //******************************************************
+        public void Idiv(Register delit, bool half = false, bool high = false)
+        {
+            
+        }
+
+        public void Idiv(string n, int b)
+        {
+            Div(n, b);  
         }
 
         /** ENTER **/ //*******************************************
@@ -260,9 +320,9 @@ namespace Emulator
         }
 
         /** IMUL **/ //******************************************
-        public void Imul(Register a)
+        public void Imul(Register a, bool half = false, bool high = false)
         {
-           
+            
         }
         
         public void Imul(Register a, Register b)
@@ -345,12 +405,77 @@ namespace Emulator
             dest.UpdateFlags(this.Flags);
         }
 
-        /** MUL **/ //*****************************************
-        public void Mul()
+        /** MUL **/
+        public void Mul(Register mn, bool half = false, bool high = false) 
         {
-
+            int m = 0;
+            // если half = false, то слово (DX:AX)
+            if (!half)
+            {
+                DX.SetZero();
+                m = mn.Value.Decimal;
+                int p = m * AX.Value.Decimal;
+                for (int i = 31; i >= 0; i--)
+                {
+                    if (i > 15)
+                    {
+                        AX.Value.Number[i - 16] = p % 2 == 1;
+                        p /= 2;
+                    }
+                    else
+                    {
+                        DX.Value.Number[i] = p % 2 == 1;
+                        p /= 2;
+                    }
+                }    
+                AX.UpdateFlags(this.Flags);
+                if (DX.Value.Decimal == 0) this.Flags.SetFlag(false, Register.Flags.OF, Register.Flags.CF);
+            }
+            // иначе байт(AX)
+            else
+            {
+                if (high) m = BinaryNumber.GetDecimal(mn.GetHigh(), 2);
+                else m = BinaryNumber.GetDecimal(mn.GetLow(), 2);
+                AX.Value.Decimal = m * BinaryNumber.GetDecimal(AX.GetLow(), 2);
+                AX.UpdateFlags(this.Flags);
+                if (DX.Value.Decimal == 0) this.Flags.SetFlag(true, Register.Flags.OF, Register.Flags.CF);
+            }
         }
 
+        // Для чисел
+        public void Mul(string n, int b)
+        {
+            int m = BinaryNumber.GetDecimal(n, b);
+            // если число превышает 255, то слово (DX:AX)
+            if (m > (Math.Pow(2, 8) - 1))
+            {
+                DX.SetZero();
+                int p = m * AX.Value.Decimal;
+                for (int i = 31; i >= 0; i--)
+                {
+                    if (i > 15)
+                    {
+                        AX.Value.Number[i - 16] = p % 2 == 1;
+                        p /= 2;
+                    }
+                    else
+                    {
+                        DX.Value.Number[i] = p % 2 == 1;
+                        p /= 2;
+                    }
+                }
+                AX.UpdateFlags(this.Flags);
+                if (DX.Value.Decimal == 0) this.Flags.SetFlag(false, Register.Flags.OF, Register.Flags.CF);
+            }
+            // иначе байт(AX)
+            else
+            {
+                AX.Value.Decimal = m * BinaryNumber.GetDecimal(AX.GetLow(), 2);
+                AX.UpdateFlags(this.Flags);
+                if (DX.Value.Decimal == 0) this.Flags.SetFlag(true, Register.Flags.OF, Register.Flags.CF);
+            }
+        }
+          
         /** NEG **/ // флаги
         public void Neg(Register a)
         {
@@ -396,42 +521,6 @@ namespace Emulator
             }
             dest.UpdateFlags(this.Flags);
             this.Flags.SetFlag(false, Register.Flags.OF, Register.Flags.CF);
-
-        }
-
-        /** POP **/ //*****************************************
-        public void Pop()
-        {
-
-        }
-
-        /** POPA **/ //*****************************************
-        public void Popa()
-        {
-
-        }
-
-        /** POPF **/  //*****************************************
-        public void Popf()
-        {
-
-        }
-
-        /** PUSH **/ //*****************************************
-        public void Push()
-        {
-
-        }
-
-        /** PUSHA **/ //*****************************************
-        public void Pusha()
-        {
-
-        }
-
-        /** PUSHF **/ //*****************************************
-        public void Pushf()
-        {
 
         }
 

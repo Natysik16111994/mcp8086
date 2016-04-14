@@ -74,7 +74,8 @@ namespace Emulator
             Processor processor = new Processor();
             // 65535
 
-            processor.AX.Value.Binary = "1011000010001000";
+//            processor.AX.Value.Binary = "1011000010001000";
+            processor.AX.Value.Binary = "0000001000000100";
             processor.BX.Value.Binary = "0100010000000101";
             //processor.Mov(processor.BX, processor.AX);
             //processor.Bsf(processor.AX, processor.BX);
@@ -107,12 +108,47 @@ namespace Emulator
             //Console.WriteLine(processor.AX.Value.Decimal);
             //Console.WriteLine(processor.BX.Value.Decimal);
            // Console.WriteLine(processor.DX.Value.Binary);
-            processor.stack.Push(processor.AX);
-            Console.WriteLine("SP: ", processor.SP.Value.Binary);
+            
+            //processor.stack.Push(processor.AX);
+           // Console.WriteLine("SP: " + processor.SP.Value.Binary);
+           /* processor.stack.Push(processor.BX);
+            Console.WriteLine("SP: " + processor.SP.Value.Binary);
+            processor.BX.Value.Binary = "0000000000000000";
+            processor.stack.Pop(processor.BX);
+            Console.WriteLine(processor.BX.Value.Binary);
+            Console.WriteLine("SP: " + processor.SP.Value.Binary);*/
 
+            processor.stack.Pusha();
+            Console.WriteLine(processor.AX.Value.Binary);
+            Console.WriteLine(processor.CX.Value.Binary);
+            Console.WriteLine(processor.DX.Value.Binary);
+            Console.WriteLine(processor.BX.Value.Binary);
+            Console.WriteLine(processor.SP.Value.Binary);
+            Console.WriteLine(processor.BP.Value.Binary);
+            Console.WriteLine(processor.SI.Value.Binary);
+            Console.WriteLine(processor.DI.Value.Binary);
+            Console.WriteLine("SP: " + processor.SP.Value.Binary);
+
+            processor.stack.Popa();
+            Console.WriteLine(processor.AX.Value.Binary);
+            Console.WriteLine(processor.CX.Value.Binary);
+            Console.WriteLine(processor.DX.Value.Binary);
+            Console.WriteLine(processor.BX.Value.Binary);
+            Console.WriteLine(processor.SP.Value.Binary);
+            Console.WriteLine(processor.BP.Value.Binary);
+            Console.WriteLine(processor.SI.Value.Binary);
+            Console.WriteLine(processor.DI.Value.Binary);
+            Console.WriteLine("SP: " + processor.SP.Value.Binary);
+           // processor.Div("10",10);
+           // processor.Mul(processor.BX, false, false);
+           /* processor.Mul("725", 10);
+            Console.WriteLine(processor.AX.Value.Binary);
+            Console.WriteLine(processor.DX.Value.Binary);*/
+
+            /*
             Console.WriteLine(string.Format("ZF: {0}", processor.IsFlag(Register.Flags.ZF)));
             Console.WriteLine(string.Format("CF: {0}", processor.IsFlag(Register.Flags.CF)));
-            Console.WriteLine(string.Format("OF: {0}", processor.IsFlag(Register.Flags.OF)));
+            Console.WriteLine(string.Format("OF: {0}", processor.IsFlag(Register.Flags.OF)));*/
 
             /*BinaryNumber a = new BinaryNumber(65365);
             BinaryNumber b = new BinaryNumber(2);

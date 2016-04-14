@@ -28,7 +28,45 @@ namespace Emulator
         {
             Value = new BinaryNumber(0);
         }
-        
+
+        // Десятичный верхний
+        public int HighDecimal
+        {
+            set
+            {
+                bool[] b = BinaryNumber.GetBinary(value);
+                for (int i = 0; i < 8; i++) this.Value.Number[i] = b[8 + i];
+            }
+            get 
+            {   
+                double d = 0;
+                for (int i = 0; i < 8; i++) d += (this.Value.Number[i] ? 1 : 0) * Math.Pow(2, 7 - i);
+                return Convert.ToInt32(d);
+            }
+        }
+
+        // Десятичный нижний
+        public int LowDecimal
+        {
+            set
+            {
+                bool[] b = BinaryNumber.GetBinary(value);
+                for (int i = 0; i < 8; i++) this.Value.Number[8 + i] = b[8 + i];
+            }
+            get 
+            {
+                double d = 0;
+                for (int i = 8; i < 16; i++) d += (this.Value.Number[i] ? 1 : 0) * Math.Pow(2, 15 - i);
+                return Convert.ToInt32(d);
+            }
+        }
+
+        // Обнуляем регистр
+        public void SetZero()
+        {
+            Value.Decimal = 0;
+        }
+
         // Разделяем 16 битный регистр на два других по 8 бит 
         // Записываем старший регистр (high)
         public string GetHigh()

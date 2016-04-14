@@ -37,9 +37,9 @@ namespace Emulator
             }
             get
             {
-                long d = 0;
-                for (int i = 0; i < 16; i++) if (this.number[i]) d += Convert.ToInt64(Math.Pow(2, 16 - i - 1));
-                return (int) d;
+                double d = 0;
+                for (int i = 0; i < 16; i++) if (this.number[i]) d += Math.Pow(2, 16 - i - 1);
+                return Convert.ToInt32(d);
             }
         }
 
@@ -86,8 +86,7 @@ namespace Emulator
             {
                 return this.number;
             }
-        }
-        
+        }        
 
         // Очищает заданный массив
         public static void MakeZero(bool[] pointer)
