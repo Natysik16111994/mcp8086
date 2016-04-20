@@ -9,6 +9,14 @@ namespace Emulator
     {
         public BinaryNumber Value;
 
+        // Тип регистра
+        public enum Types
+        {
+            None,
+            Low,
+            High
+        };
+
         // Флаги
         public enum Flags
         {
@@ -27,6 +35,20 @@ namespace Emulator
         public Register()
         {
             Value = new BinaryNumber(0);
+        }
+
+
+        // Десятичное значение
+        public int Decimal
+        {
+            set
+            {
+                this.Value.Decimal = value;
+            }
+            get
+            {
+                return this.Value.Decimal;
+            }
         }
 
         // Десятичный верхний

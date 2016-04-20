@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
 namespace Emulator
 {   
+    using RT = Register.Types;
+
     // Класс процессор
     class Processor
     {
@@ -29,32 +30,39 @@ namespace Emulator
 
             stack = new Stack(this);
         }
-
-        /** ADD **/
-        public void Add(Register a, Register b)
+        
+        // Возвращает регистр по имени
+        public Register GetRegisterByName(string name)
         {
-            a.Value += b.Value;
-            a.UpdateFlags(this.Flags);
+            name = name.ToLower();
+            if (name.Substring(1, 1) == "l" || name.Substring(1, 1) == "h") name = name.Substring(0, 1) + "x";
+            if (name == "ax") return this.AX;
+            else if (name == "bx") return this.BX;
+            else if (name == "cx") return this.CX;
+            else if (name == "dx") return this.DX;
+            else if (name == "si") return this.SI;
+            else if (name == "cs") return this.CS;
+            else if (name == "bp") return this.BP;
+            else if (name == "cs") return this.CS;
+            else if (name == "ds") return this.DX;
+            else if (name == "es") return this.ES;
+            else if (name == "ss") return this.SS;
+            else if (name == "ip") return this.IP;
+            return null;
         }
 
-        public void Add(Register a, string d, int b)
+        /** ADD **/
+        public void Add(Register a, object b, RT at, RT bt)
         {
-            a.Value += BinaryNumber.GetDecimal(d, b);
+            SetRegisterValue(a, at, GetRegisterValue(a, at) + GetValueFromObject(b, bt));
             a.UpdateFlags(this.Flags);
         }
 
         /** ADC **/
-        public void Adc(Register a, Register b)
+        public void Adc(Register a, object b, RT at, RT bt)
         {
-            a.Value += b.Value;
-            if (a.Value.CarryFlag) a.Value += 1;
-            a.UpdateFlags(this.Flags);
-        }
-
-        public void Adc(Register a, string n, int b)
-        {
-            a.Value += BinaryNumber.GetDecimal(n, b);
-            if (a.Value.CarryFlag) a.Value += 1;
+            SetRegisterValue(a, at, GetRegisterValue(a, at) + GetValueFromObject(b, bt));
+            if (a.Value.CarryFlag) a.Decimal += 1;
             a.UpdateFlags(this.Flags);
         }
 
@@ -831,15 +839,51 @@ namespace Emulator
          //-----------------------------------------------------
 
          /** MOV **/
-         public void Mov(Register a, Register b)
+         public void Mov(Register a, object val, RT at, RT bt)
+         {
+             SetRegisterValue(a, at, GetValueFromObject(val, bt));
+         }
+
+        /*
+        public void Mov(Register a, Register b, Register.Types typeA = Register.Types.None, Register.Types typeB = Register.Types.None)
         {
-            a.Value.Decimal = b.Value.Decimal;
+            SetRegisterValue(a, typeA, 
+                (typeB == Register.Types.None ? b.Decimal : (typeB == Register.Types.High ? b.HighDecimal : b.LowDecimal)));
         }
 
-        public void Mov(Register a, string d, int b)
+        public void Mov(Register a, int n, Register.Types type = Register.Types.None)
         {
-            a.Value.Decimal = BinaryNumber.GetDecimal(d, b);
+            SetRegisterValue(a, type, n);
+        }*/
+
+        //---------------------------------------------------------
+        // Извлекает значение из объекта
+        public int GetValueFromObject(object obj, RT type)
+        {
+            if(obj is Register)
+            {
+                Register a = (Register)obj;
+                if(type == RT.None) return a.Decimal;
+                else return (type == RT.High ? a.HighDecimal : a.LowDecimal);
+            }
+            return (int)obj;
         }
+
+        //---------------------------------------------------------
+        // Устанавливает значение в регистр
+        public void SetRegisterValue(Register a, Register.Types type, int n)
+        {
+            if (type == Register.Types.None) a.Decimal = n;
+            else if (type == Register.Types.High) a.HighDecimal = n;
+            else if (type == Register.Types.Low) a.LowDecimal = n;
+        }
+
+        // Возвращает значение из регистра
+        public int GetRegisterValue(Register a, Register.Types type)
+        {
+            return (type == Register.Types.None ? a.Decimal : (type == Register.Types.High ? a.HighDecimal : a.LowDecimal));
+        }
+
 
         public bool IsFlag(Register.Flags f)
         {

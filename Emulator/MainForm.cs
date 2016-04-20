@@ -12,9 +12,10 @@ namespace Emulator
     public partial class MainForm : Form
     {
         private RegistersForm registersForm;
-        private ProgramForm program;
-        private DebugForm debug;
-        private OutputForm output;
+        //private ProgramForm program;
+        //private DebugForm debug;
+        //private OutputForm output;
+        private Assembler assembler;
 
         public MainForm()
         {
@@ -75,8 +76,8 @@ namespace Emulator
             // 65535
 
 //            processor.AX.Value.Binary = "1011000010001000";
-            processor.AX.Value.Binary = "0000001000000100";
-            processor.BX.Value.Binary = "0100010000000101";
+            /*processor.AX.Value.Binary = "0000001000000100";
+            processor.BX.Value.Binary = "0100010000000101";*/
             //processor.Mov(processor.BX, processor.AX);
             //processor.Bsf(processor.AX, processor.BX);
             //Console.WriteLine(processor.BX.Value.Binary);
@@ -87,8 +88,8 @@ namespace Emulator
            // processor.Cmc();
            // processor.Cbw(processor.AX);
             //processor.Cwd();
-            Console.WriteLine(processor.AX.Value.Binary);
-            Console.WriteLine(processor.BX.Value.Binary);
+            /*Console.WriteLine(processor.AX.Value.Binary);
+            Console.WriteLine(processor.BX.Value.Binary);*/
             //processor.Movsx(processor.BX processor.AX);
             //Console.WriteLine(processor.BX.Value.Binary);
             //Console.WriteLine(processor.AX.Value.Decimal);
@@ -118,7 +119,7 @@ namespace Emulator
             Console.WriteLine(processor.BX.Value.Binary);
             Console.WriteLine("SP: " + processor.SP.Value.Binary);*/
 
-            processor.stack.Pusha();
+           /* processor.stack.Pusha();
             Console.WriteLine(processor.AX.Value.Binary);
             Console.WriteLine(processor.CX.Value.Binary);
             Console.WriteLine(processor.DX.Value.Binary);
@@ -138,7 +139,7 @@ namespace Emulator
             Console.WriteLine(processor.BP.Value.Binary);
             Console.WriteLine(processor.SI.Value.Binary);
             Console.WriteLine(processor.DI.Value.Binary);
-            Console.WriteLine("SP: " + processor.SP.Value.Binary);
+            Console.WriteLine("SP: " + processor.SP.Value.Binary);*/
            // processor.Div("10",10);
            // processor.Mul(processor.BX, false, false);
            /* processor.Mul("725", 10);
@@ -161,6 +162,14 @@ namespace Emulator
             Console.WriteLine(a.Decimal);
 
             Console.WriteLine(string.Format("CF: {0}\nOF: {1}", a.CarryFlag, a.OverflowFlag));*/
+
+            // Assembler
+            assembler = new Assembler(processor);
+            assembler.LoadAsmFromFile("add.asm");
+            assembler.ExecuteInstruction();
+            assembler.ExecuteInstruction();
+            assembler.ExecuteInstruction();
+
         }
 
         // Кнопки в меню
@@ -176,7 +185,7 @@ namespace Emulator
             open.Filter = "txt files  (*.txt)|*.txt";
             if (open.ShowDialog() == DialogResult.OK)
             {
-                program.richTextBox1.Text = File.ReadAllText(open.FileName, Encoding.Default);
+                //program.richTextBox1.Text = File.ReadAllText(open.FileName, Encoding.Default);
             }
         }
         
@@ -187,44 +196,44 @@ namespace Emulator
             save.Filter = "txt files (*.txt)|.txt";
             if (save.ShowDialog() == DialogResult.OK)
             {
-                File.WriteAllText(save.FileName, program.richTextBox1.Text, Encoding.Default); 
+                //File.WriteAllText(save.FileName, program.richTextBox1.Text, Encoding.Default); 
             }
         }
         
         // Создать
         private void создатьToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            program.richTextBox1.Clear(); 
+            //program.richTextBox1.Clear(); 
         }
         
         // Отменить
         private void отменитьToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            program.richTextBox1.Undo();
+            //program.richTextBox1.Undo();
         }
 
         // Повторить
         private void повторитьToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            program.richTextBox1.Redo();
+            //program.richTextBox1.Redo();
         }
         
         // Вырезать
         private void вырезатьToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            program.richTextBox1.Cut();
+            //program.richTextBox1.Cut();
         }
         
         // Копировать
         private void копироватьToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            program.richTextBox1.Copy();
+           //program.richTextBox1.Copy();
         }
 
         // Вставить
         private void вставитьToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            program.richTextBox1.Paste();
+            //program.richTextBox1.Paste();
         }
 
     }
