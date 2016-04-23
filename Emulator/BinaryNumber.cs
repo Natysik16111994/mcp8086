@@ -292,9 +292,11 @@ namespace Emulator
             List<bool> bin = new List<bool>();
             while (dec > 0)
             {
-                bin.Insert(bin.Count, dec % 2 == 1);
+                bin.Add(dec % 2 == 1);
+                //bin.Insert(bin.Count, dec % 2 == 1);
                 dec /= 2;
             }
+            while (bin.Count < 32) bin.Add(false);
             bin.Reverse();
             return bin.ToArray();
         }
@@ -312,6 +314,26 @@ namespace Emulator
                 index--;
             }
             return bin;
+        }
+
+        /// <summary>
+        /// Возвращает биты в виде массива. (Массив может быть любой длины)
+        /// </summary>
+        /// <param name="dec"></param>
+        /// <returns></returns>
+        public static bool[] GetBinaryA(int dec, Register.Types type)
+        {
+            List<bool> bin = new List<bool>();
+            int n = dec > BinaryNumber.MaxUnsignedDecimal ? 0 : dec;
+            while (n > 0)
+            {
+                bin.Add((n % 2) == 1);
+                n /= 2;
+            }
+            bin.Reverse();
+            int minLen = (type == Register.Types.None) ? 16 : 8;
+            while (bin.Count < minLen) bin.Insert(0, false);
+            return bin.ToArray();
         }
 
         // Перевод числа в десятичное

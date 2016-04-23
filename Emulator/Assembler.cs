@@ -36,6 +36,14 @@ namespace Emulator
             this.processor = proc;
         }
 
+        public bool ProgramEnd
+        {
+            get
+            {
+                return currentInstructionIndex >= instructions.Count;
+            }
+        }
+
         // Сброс текущей информации о запуске
         public void ResetRuntime()
         {
@@ -140,8 +148,8 @@ namespace Emulator
             instruct.operand1 = operands[0]; instruct.operand2 = operands[1];
             instruct.type1 = GetOperandType(operands[0]);
             instruct.type2 = GetOperandType(operands[1]);
-            instruct.regtype1 = GetRegisterType(operands[0]);
-            instruct.regtype2 = GetRegisterType(operands[1]);
+            if(instruct.type1 == aiOperandType.Register) instruct.regtype1 = GetRegisterType(operands[0]);
+            if(instruct.type2 == aiOperandType.Register) instruct.regtype2 = GetRegisterType(operands[1]);
             return true;
         }
         
@@ -157,7 +165,7 @@ namespace Emulator
         // Возвращает тип регистра
         public Register.Types GetRegisterType(string operand)
         {
-            if (operand.Length > 0)
+            if (operand.Length == 2)
             {
                 if (operand.Substring(1, 1) == "l") return Register.Types.Low;
                 else if (operand.Substring(1, 1) == "h") return Register.Types.High;
@@ -168,32 +176,296 @@ namespace Emulator
         // Выполняет текущую инструкцию
         public bool ExecuteInstruction()
         {
+            if (currentInstructionIndex >= instructions.Count) return false;
             AsmInstruction inst = instructions[currentInstructionIndex];
             currentInstructionIndex++;
 
             object value_a = null, value_b = null;
-
             if(!GetValueOrRegister(inst.operand1, inst.type1, out value_a) ||
                 !GetValueOrRegister(inst.operand2, inst.type2, out value_b))
             {
                 return false;
             }
+
+            Register ra = null;
+            if (value_a is Register) ra = (Register)value_a;
             
             // TODO: проверка опкода
-
 
             switch (inst.opcode)
             {
                 case "add":
-                    processor.Add((Register)value_a, value_b, inst.regtype1, inst.regtype2);
+                    processor.Add(ra, value_b, inst.regtype1, inst.regtype2);
                     break;
 
                 case "adc":
-                    processor.Adc((Register)value_a, value_b, inst.regtype1, inst.regtype2);
+                    processor.Adc(ra, value_b, inst.regtype1, inst.regtype2);
+                    break;
+
+                case "and":
+                    processor.And(ra, value_b, inst.regtype1, inst.regtype2);
+                    break;
+
+                case "bsf":
+                    processor.Bsf(ra, value_b);
+                    break;
+
+                case "bsr":
+                    processor.Bsr(ra, value_b);
+                    break;
+
+                case "bt":
+                    processor.Bt(ra, (int)value_b);
+                    break;
+
+                case "btc":
+                    processor.Btc(ra, (int)value_b);
+                    break;
+
+                case "btr":
+                    processor.Btr(ra, (int)value_b);
+                    break;
+
+                case "bts":
+                    processor.Bts(ra, (int)value_b);
+                    break;
+
+                // TODO: call
+                case "call":
+                    break;
+
+                case "cbw":
+                    processor.Cbw(ra);
+                    break;
+
+                case "clc":
+                    processor.Clc();
+                    break;
+
+                case "cld":
+                    processor.Cld();
+                    break;
+
+                case "cli":
+                    processor.Cli();
+                    break;
+
+                case "cmc":
+                    processor.Cmc();
+                    break;
+
+                case "cmp":
+                    processor.Cmp(ra, value_a, inst.regtype1, inst.regtype2);
+                    break;
+
+                case "cwd":
+                    processor.Cwd();
+                    break;
+
+                case "dec":
+                    processor.Dec(ra, inst.regtype1);
+                    break;
+
+                case "div":
+                    processor.Div(value_a, inst.regtype1);
+                    break;
+
+                case "idiv":
+                    processor.Idiv(value_a, inst.regtype1);
+                    break;
+
+                case "enter":
+                    processor.Enter();
+                    break;
+
+                case "imul":
+                    processor.Imul(value_a, inst.regtype1);
+                    break;
+
+                case "inc":
+                    processor.Inc(ra, inst.regtype1);
+                    break;
+
+                case "je": case "jz":
+                    processor.JZ(value_a);
+                    break;
+
+                case "jnz": case "jne":
+                    processor.JNZ(value_a);
+                    break;
+
+                case "jc": case "jnae": case "jb":
+                    processor.JC(value_a);
+                    break;
+
+                case "jnc": case "jae": case "jnb":
+                    processor.JNC(value_a);
+                    break;
+
+                case "jp":
+                    processor.JP(value_a);
+                    break;
+
+                case "jnp":
+                    processor.JNP(value_a);
+                    break;
+
+                case "js":
+                    processor.JS(value_a);
+                    break;
+
+                case "jns":
+                    processor.JNS(value_a);
+                    break;
+
+                case "jo":
+                    processor.JO(value_a);
+                    break;
+
+                case "jno":
+                    processor.JNO(value_a);
+                    break;
+
+                case "ja": case "jnbe":
+                    processor.JA(value_a);
+                    break;
+
+                case "jna": case "jbe":
+                    processor.JNA(value_a);
+                    break;
+
+                case "jg": case "jnle":
+                    processor.JG(value_a);
+                    break;
+
+                case "jge": case "jnl":
+                    processor.JGE(value_a);
+                    break;
+
+                case "jl": case "jnge":
+                    processor.JL(value_a);
+                    break;
+
+                case "jle": case "jng":
+                    processor.JLE(value_a);
+                    break;
+
+                case "jcxz":
+                    processor.JCXZ(value_a);
+                    break;
+
+                case "jmp":
+                    processor.Jmp(value_a);
+                    break;
+
+                case "lahf":
+                    processor.Lahf();
+                    break;
+
+                case "leave":
+                    break;
+
+                case "loop":
+                    processor.Loop(value_a);
+                    break;
+
+                case "loopnz": case "loopne":
+                    processor.Loopnz(value_a);
+                    break;
+
+                case "loopz": case "loppe":
+                    processor.Loopz(value_a);
                     break;
 
                 case "mov":
-                    processor.Mov((Register)value_a, value_b, inst.regtype1, inst.regtype2);
+                    processor.Mov(ra, value_b, inst.regtype1, inst.regtype2);
+                    break;
+
+                case "movsb":
+                    processor.Movsb();
+                    break;
+
+                case "mul":
+                    processor.Mul(value_a, inst.regtype1);
+                    break;
+
+                case "neg":
+                    processor.Neg(ra, inst.regtype1);
+                    break;
+
+                case "nop":
+                    break;
+
+                case "not":
+                    processor.Not(ra, inst.regtype1);
+                    break;
+
+                case "or":
+                    processor.Or(ra, value_b, inst.regtype1, inst.regtype2);
+                    break;
+
+                case "rcl":
+                    processor.Rcl(ra, (int)value_b);
+                    break;
+
+                case "rcr":
+                    processor.Rcr(ra, (int)value_b);
+                    break;
+
+                case "rol":
+                    processor.Rol(ra, (int)value_b);
+                    break;
+
+                case "ror":
+                    processor.Ror(ra, (int)value_b);
+                    break;
+
+                case "sahf":
+                    processor.Sahf();
+                    break;
+
+                case "sal": case "shl":
+                    processor.Sal(ra, (int)value_b, inst.regtype1);
+                    break;
+
+                case "sar":
+                    processor.Sar(ra, (int)value_b, inst.regtype1);
+                    break;
+
+                case "sbb":
+                    processor.Sbb(ra, value_b, inst.regtype1, inst.regtype2);
+                    break;
+
+                case "shr":
+                    processor.Shr(ra, (int)value_b, inst.regtype1);
+                    break;
+
+                case "stc":
+                    processor.Stc();
+                    break;
+
+                case "std":
+                    processor.Std();
+                    break;
+
+                case "sti":
+                    processor.Sti();
+                    break;
+
+                case "sub":
+                    processor.Sub(ra, value_b, inst.regtype1, inst.regtype2);
+                    break;
+
+                case "test":
+                    processor.Test(value_a, value_b, inst.regtype1, inst.regtype2);
+                    break;
+
+                case "xchg":
+                    processor.Xchg(ra, (Register)value_b, inst.regtype1, inst.regtype2);
+                    break;
+
+                case "xor":
+                    processor.Xor(ra, value_b, inst.regtype1, inst.regtype2);
                     break;
             }
             return true;
@@ -201,7 +473,7 @@ namespace Emulator
 
         public bool GetValueOrRegister(string data, aiOperandType type, out object obj)
         {
-            obj = null;
+            obj = 0;
             if (type == aiOperandType.Register)
             {
                 obj = processor.GetRegisterByName(data.Trim());
@@ -212,17 +484,13 @@ namespace Emulator
                 int val;
                 if (!int.TryParse(data, out val))
                 {
-                    // строка
-                    if (data.Substring(0, 1) == "'" && data.Substring(data.Length - 1, 1) == "'")
-                    {
-                        //
-                    }
-                    else
+                    data = data.Trim(("'").ToCharArray());
+                    if (data.Length > 1)
                     {
                         string letter = data.Substring(data.Length - 1, 1);
                         int nbase = 0;
                         if (letter == "h") nbase = 16;
-                        if (letter == "o") nbase = 8;
+                        else if (letter == "o") nbase = 8;
                         else if (letter == "b") nbase = 2;
                         if (nbase != 0)
                         {
@@ -230,8 +498,9 @@ namespace Emulator
                             obj = BinaryNumber.GetDecimal(data, nbase);
                             return true;
                         }
-                        return false;
                     }
+                    obj = data;
+                    return true;
                 }
                 else
                 {
@@ -243,49 +512,13 @@ namespace Emulator
             return false;
         }
 
-        /*
-        public bool GetValueOrRegister(string data, aiOperandType type, ref Register reg, out int val)
+        // Перепрыгнуть на метку
+        public void JumpOnLabel(string label)
         {
-            reg = null;
-            val = 0;
-            if (type == aiOperandType.Register)
+            if (labelIndices.ContainsKey(label))
             {
-                reg = processor.GetRegisterByName(data.Trim());
-                return true;
+                currentInstructionIndex = labelIndices[label];
             }
-            else if (type == aiOperandType.Value)
-            {
-                if (!int.TryParse(data, out val))
-                {
-                    // строка
-                    if (data.Substring(0, 1) == "'" && data.Substring(data.Length - 1, 1) == "'")
-                    {
-                        //
-                    }
-                    else
-                    {
-                        string letter = data.Substring(data.Length - 1, 1);
-                        int nbase = 0;
-                        if (letter == "h") nbase = 16;
-                        if (letter == "o") nbase = 8;
-                        else if (letter == "b") nbase = 2;
-                        if (nbase != 0)
-                        {
-                            data = data.Substring(0, data.Length - 1);
-                            val = BinaryNumber.GetDecimal(data, nbase);
-                            return true;
-                        }
-                        return false;
-                    }
-                }
-                else
-                {
-                    return true;
-                }
-            }
-            else if (type == aiOperandType.Null) return true;
-            return false;
         }
-        */
     }
 }

@@ -15,7 +15,6 @@ namespace Emulator
         //private ProgramForm program;
         //private DebugForm debug;
         //private OutputForm output;
-        private Assembler assembler;
 
         public MainForm()
         {
@@ -164,12 +163,24 @@ namespace Emulator
             Console.WriteLine(string.Format("CF: {0}\nOF: {1}", a.CarryFlag, a.OverflowFlag));*/
 
             // Assembler
-            assembler = new Assembler(processor);
+            //assembler = new Assembler(processor);
+            Assembler assembler = processor.assembler;
             assembler.LoadAsmFromFile("add.asm");
+            while (!assembler.ProgramEnd)
+            {
+                assembler.ExecuteInstruction();
+            }
+            Console.WriteLine(processor.AX.Decimal);
+            /*
             assembler.ExecuteInstruction();
             assembler.ExecuteInstruction();
             assembler.ExecuteInstruction();
-
+            assembler.ExecuteInstruction();
+            assembler.ExecuteInstruction();
+            assembler.ExecuteInstruction();
+            assembler.ExecuteInstruction();
+            assembler.ExecuteInstruction();
+            assembler.ExecuteInstruction();*/
         }
 
         // Кнопки в меню
