@@ -35,12 +35,20 @@ namespace Emulator
             _privateRegister = new Register();
         }
 
+        /// <summary>
+        /// Возвращает экземпляр ассемблера
+        /// </summary>
+        /// <returns></returns>
         public Assembler GetAssembler()
         {
             return _assembler;
         }
         
-        // Возвращает регистр по имени
+        /// <summary>
+        /// Возвращает регистр по имени
+        /// </summary>
+        /// <param name="name">Имя регистра</param>
+        /// <returns>Возвращает регистр если есть, в ином случае null.</returns>
         public Register GetRegisterByName(string name)
         {
             if (name.Length != 2) return null;
@@ -51,14 +59,28 @@ namespace Emulator
             else if (name == "cx") return this.CX;
             else if (name == "dx") return this.DX;
             else if (name == "si") return this.SI;
-            else if (name == "cs") return this.CS;
+            else if (name == "di") return this.DI;
             else if (name == "bp") return this.BP;
+            else if (name == "sp") return this.SP;
             else if (name == "cs") return this.CS;
-            else if (name == "ds") return this.DX;
+            else if (name == "ds") return this.DS;
             else if (name == "es") return this.ES;
             else if (name == "ss") return this.SS;
             else if (name == "ip") return this.IP;
             return null;
+        }
+
+        /// <summary>
+        /// Сбрасывает состояние регистров
+        /// </summary>
+        public void ResetRegisters()
+        {
+            AX.Decimal = BX.Decimal = CX.Decimal = DX.Decimal = 0;
+            SI.Decimal = DI.Decimal = 0;
+            BP.Decimal = SP.Decimal = 0;
+            CS.Decimal = DS.Decimal = ES.Decimal = SS.Decimal = 0;
+            IP.Decimal = 0;
+            Flags.Decimal = 0;
         }
 
         /** ADD **/

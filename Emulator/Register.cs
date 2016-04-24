@@ -168,11 +168,6 @@ namespace Emulator
         {
             for (int i = 0; i < f.Length; i++) Set((int)f[i], state);
         }
-        /*
-        public void SetFlag(bool state, params int[] f)
-        {
-            for (int i = 0; i < f.Length; i++) Set(f[i], state);
-        }*/
 
         // Выставляет флаги
         public void UpdateFlags(Register flags)
@@ -191,7 +186,14 @@ namespace Emulator
             flags.SetFlag(Flags.OF, Value.OverflowFlag);
             flags.SetFlag(Flags.ZF, Value.Decimal == 0);
             flags.SetFlag(Flags.SF, Value.Number[0]);
-            flags.SetFlag(Flags.PF, Value.Decimal % 2 == 0);
+
+            // PF
+            int pf_count = 0;
+            for (int i = 8; i < 16; i++)
+                if (Value.Number[i]) pf_count++;
+            flags.SetFlag(pf_count % 2 == 0, Flags.PF);
+
+
             //flags.SetFlag(Flags.AF, ...);
         }
     }

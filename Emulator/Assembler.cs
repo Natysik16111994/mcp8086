@@ -18,6 +18,7 @@ namespace Emulator
         public int line;
         public aiOperandType type1, type2;
         public Register.Types regtype1, regtype2;
+        public string raw;
     }
 
     public class Assembler
@@ -42,6 +43,40 @@ namespace Emulator
             {
                 return currentInstructionIndex >= instructions.Count;
             }
+            set
+            {
+                currentInstructionIndex = instructions.Count;
+            }
+        }
+
+        public bool ProgramReady
+        {
+            get
+            {
+                return currentInstructionIndex == 0 && instructions.Count > 0;
+            }
+        }
+
+        public bool ProgramExecuting
+        {
+            get
+            {
+                return !ProgramEnd && currentInstructionIndex >= 0 && instructions.Count > 0;
+            }
+        }
+
+        public int GetCurrentLine()
+        {
+            if (ProgramExecuting) return instructions[currentInstructionIndex].line;
+            return -1;
+        }
+
+        public List<AsmInstruction> Instructions
+        {
+            get
+            {
+                return this.instructions;
+            }
         }
 
         // Сброс текущей информации о запуске
@@ -61,7 +96,9 @@ namespace Emulator
         public bool LoadAsm(string[] content)
         {
             // Очищаем старые значения
+            currentInstructionIndex = 0;
             instructions.Clear(); labelIndices.Clear();
+
             string a, b, c;
             for (int i = 0; i < content.Length; i++)
             {
@@ -104,6 +141,7 @@ namespace Emulator
         // Парсинг строки
         private bool ParseString(string str, out AsmInstruction instruct)
         {
+            instruct.raw = str;
             instruct.opcode = instruct.operand1 = instruct.operand2 = "";
             instruct.type1 = instruct.type2 = aiOperandType.Value;
             instruct.regtype1 = instruct.regtype2 = Register.Types.None;

@@ -31,10 +31,10 @@
             this.components = new System.ComponentModel.Container();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.ButtonRestart = new System.Windows.Forms.Button();
-            this.ButtonBack = new System.Windows.Forms.Button();
-            this.ButtonNext = new System.Windows.Forms.Button();
-            this.ButtonStart = new System.Windows.Forms.Button();
+            this.buttonStop = new System.Windows.Forms.Button();
+            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.buttonNext = new System.Windows.Forms.Button();
+            this.buttonStart = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // richTextBox1
@@ -48,42 +48,46 @@
             this.richTextBox1.TabIndex = 0;
             this.richTextBox1.Text = "";
             // 
-            // ButtonRestart
+            // buttonStop
             // 
-            this.ButtonRestart.Image = global::Emulator.Properties.Resources._1454418698_update;
-            this.ButtonRestart.Location = new System.Drawing.Point(12, 12);
-            this.ButtonRestart.Name = "ButtonRestart";
-            this.ButtonRestart.Size = new System.Drawing.Size(32, 32);
-            this.ButtonRestart.TabIndex = 4;
-            this.ButtonRestart.UseVisualStyleBackColor = true;
+            this.buttonStop.Enabled = false;
+            this.buttonStop.Image = global::Emulator.Properties.Resources.shape_square_16;
+            this.buttonStop.Location = new System.Drawing.Point(88, 12);
+            this.buttonStop.Name = "buttonStop";
+            this.buttonStop.Size = new System.Drawing.Size(32, 32);
+            this.buttonStop.TabIndex = 5;
+            this.buttonStop.UseVisualStyleBackColor = true;
+            this.buttonStop.Click += new System.EventHandler(this.buttonStop_Click);
             // 
-            // ButtonBack
+            // listBox1
             // 
-            this.ButtonBack.Image = global::Emulator.Properties.Resources._1454418848_resultset_first;
-            this.ButtonBack.Location = new System.Drawing.Point(50, 12);
-            this.ButtonBack.Name = "ButtonBack";
-            this.ButtonBack.Size = new System.Drawing.Size(32, 32);
-            this.ButtonBack.TabIndex = 3;
-            this.ButtonBack.UseVisualStyleBackColor = true;
+            this.listBox1.FormattingEnabled = true;
+            this.listBox1.Location = new System.Drawing.Point(13, 51);
+            this.listBox1.Name = "listBox1";
+            this.listBox1.SelectionMode = System.Windows.Forms.SelectionMode.None;
+            this.listBox1.Size = new System.Drawing.Size(308, 433);
+            this.listBox1.TabIndex = 6;
+            this.listBox1.Visible = false;
             // 
-            // ButtonNext
+            // buttonNext
             // 
-            this.ButtonNext.Image = global::Emulator.Properties.Resources._1454418842_resultset_last;
-            this.ButtonNext.Location = new System.Drawing.Point(128, 12);
-            this.ButtonNext.Name = "ButtonNext";
-            this.ButtonNext.Size = new System.Drawing.Size(32, 32);
-            this.ButtonNext.TabIndex = 2;
-            this.ButtonNext.UseVisualStyleBackColor = true;
+            this.buttonNext.Image = global::Emulator.Properties.Resources._1454418842_resultset_last;
+            this.buttonNext.Location = new System.Drawing.Point(50, 12);
+            this.buttonNext.Name = "buttonNext";
+            this.buttonNext.Size = new System.Drawing.Size(32, 32);
+            this.buttonNext.TabIndex = 2;
+            this.buttonNext.UseVisualStyleBackColor = true;
+            this.buttonNext.Click += new System.EventHandler(this.buttonNext_Click);
             // 
-            // ButtonStart
+            // buttonStart
             // 
-            this.ButtonStart.Image = global::Emulator.Properties.Resources._1454418802_resultset_next;
-            this.ButtonStart.Location = new System.Drawing.Point(88, 12);
-            this.ButtonStart.Name = "ButtonStart";
-            this.ButtonStart.Size = new System.Drawing.Size(32, 32);
-            this.ButtonStart.TabIndex = 1;
-            this.ButtonStart.UseVisualStyleBackColor = true;
-            this.ButtonStart.MouseEnter += new System.EventHandler(this.ButtonStart_MouseEnter);
+            this.buttonStart.Image = global::Emulator.Properties.Resources._1454418802_resultset_next;
+            this.buttonStart.Location = new System.Drawing.Point(12, 12);
+            this.buttonStart.Name = "buttonStart";
+            this.buttonStart.Size = new System.Drawing.Size(32, 32);
+            this.buttonStart.TabIndex = 1;
+            this.buttonStart.UseVisualStyleBackColor = true;
+            this.buttonStart.Click += new System.EventHandler(this.buttonStart_Click);
             // 
             // ProgramForm
             // 
@@ -91,10 +95,10 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(333, 502);
-            this.Controls.Add(this.ButtonRestart);
-            this.Controls.Add(this.ButtonBack);
-            this.Controls.Add(this.ButtonNext);
-            this.Controls.Add(this.ButtonStart);
+            this.Controls.Add(this.listBox1);
+            this.Controls.Add(this.buttonStop);
+            this.Controls.Add(this.buttonNext);
+            this.Controls.Add(this.buttonStart);
             this.Controls.Add(this.richTextBox1);
             this.Name = "ProgramForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
@@ -106,12 +110,12 @@
 
         #endregion
 
-        private System.Windows.Forms.Button ButtonStart;
+        private System.Windows.Forms.Button buttonStart;
         private System.Windows.Forms.ToolTip toolTip;
-        private System.Windows.Forms.Button ButtonNext;
-        private System.Windows.Forms.Button ButtonBack;
-        private System.Windows.Forms.Button ButtonRestart;
+        private System.Windows.Forms.Button buttonNext;
         public System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.Button buttonStop;
+        private System.Windows.Forms.ListBox listBox1;
 
     }
 }

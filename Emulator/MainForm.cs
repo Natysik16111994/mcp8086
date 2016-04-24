@@ -11,8 +11,8 @@ namespace Emulator
 {
     public partial class MainForm : Form
     {
-        private RegistersForm registersForm;
-        private ProgramForm programForm;
+        public static RegistersForm registersForm = null;
+        public static ProgramForm programForm = null;
         //private DebugForm debug;
         //private OutputForm output;
 
@@ -33,11 +33,12 @@ namespace Emulator
             registersForm.Top = 0;
             registersForm.Show();
 
-            programForm = new ProgramForm();
+            programForm = new ProgramForm(processor);
             programForm.MdiParent = this;
             programForm.Left = registersForm.Right + 2;
             programForm.Top = 0;
             programForm.Show();
+            programForm.richTextBox1.Text = String.Join("\n", File.ReadAllLines("add.asm"));
 
             /*program = new ProgramForm();
             program.MdiParent = this;
