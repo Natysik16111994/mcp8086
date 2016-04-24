@@ -70,5 +70,14 @@ namespace Emulator
             }
             obj.Text = text;
         }
+
+        private void RegistersForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason != CloseReason.MdiFormClosing)
+            {
+                e.Cancel = true;
+                this.Visible = MainForm.Instance.окноРегистровToolStripMenuItem.Checked = false;
+            }
+        }
     }
 }

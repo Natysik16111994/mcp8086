@@ -928,8 +928,12 @@
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox4);
+            this.MinimumSize = new System.Drawing.Size(754, 289);
             this.Name = "RegistersForm";
-            this.Text = "RegistersForm";
+            this.ShowIcon = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
+            this.Text = "Регистры";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.RegistersForm_FormClosing);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox6.ResumeLayout(false);

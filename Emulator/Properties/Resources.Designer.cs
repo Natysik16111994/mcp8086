@@ -63,16 +63,6 @@ namespace Emulator.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap _1454418698_update {
-            get {
-                object obj = ResourceManager.GetObject("_1454418698_update", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap _1454418802_resultset_next {
             get {
                 object obj = ResourceManager.GetObject("_1454418802_resultset_next", resourceCulture);
@@ -93,9 +83,39 @@ namespace Emulator.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap _1454418848_resultset_first {
+        internal static System.Drawing.Bitmap _1461522452_document_16 {
             get {
-                object obj = ResourceManager.GetObject("_1454418848_resultset_first", resourceCulture);
+                object obj = ResourceManager.GetObject("_1461522452_document_16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap _1461522515_folder_16 {
+            get {
+                object obj = ResourceManager.GetObject("_1461522515_folder_16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap _1461522528_save_16 {
+            get {
+                object obj = ResourceManager.GetObject("_1461522528_save_16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap _1461522691_info_16 {
+            get {
+                object obj = ResourceManager.GetObject("_1461522691_info_16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

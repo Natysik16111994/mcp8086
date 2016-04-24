@@ -11,13 +11,18 @@ namespace Emulator
 {
     public partial class MainForm : Form
     {
-        public static RegistersForm registersForm = null;
-        public static ProgramForm programForm = null;
+        public static MainForm Instance = null;
+        /*public static RegistersForm registersForm = null;
+        public static ProgramForm programForm = null;*/
         //private DebugForm debug;
-        //private OutputForm output;
+        public RegistersForm registersForm;
+        public ProgramForm programForm;
+        public OutputForm outputForm;
 
         private Processor processor = null;
         private Assembler assembler;
+
+        private string _file = "";
 
         public MainForm()
         {
@@ -26,19 +31,12 @@ namespace Emulator
             processor = new Processor();
             assembler = processor.GetAssembler();
 
-            // Выводим и располагаем формы
             registersForm = new RegistersForm(processor);
-            registersForm.MdiParent = this;
-            registersForm.Left = 0;
-            registersForm.Top = 0;
-            registersForm.Show();
-
             programForm = new ProgramForm(processor);
-            programForm.MdiParent = this;
-            programForm.Left = registersForm.Right + 2;
-            programForm.Top = 0;
-            programForm.Show();
-            programForm.richTextBox1.Text = String.Join("\n", File.ReadAllLines("add.asm"));
+            outputForm = new OutputForm();
+
+            MainForm.Instance = this;
+            
 
             /*program = new ProgramForm();
             program.MdiParent = this;
@@ -178,13 +176,13 @@ namespace Emulator
             // Assembler
             //assembler = new Assembler(processor);
             //Assembler assembler = processor.assembler;
-            assembler.LoadAsmFromFile("add.asm");
-            while (!assembler.ProgramEnd)
+            //assembler.LoadAsmFromFile("add.asm");
+            /*while (!assembler.ProgramEnd)
             {
                 assembler.ExecuteInstruction();
                 registersForm.UpdateView();
             }
-            Console.WriteLine(processor.AX.Decimal);
+            Console.WriteLine(processor.AX.Decimal);*/
             //registersForm.UpdateView();
             /*
             assembler.ExecuteInstruction();
@@ -248,21 +246,82 @@ namespace Emulator
         // Вырезать
         private void вырезатьToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //program.richTextBox1.Cut();
+            programForm.richTextBox1.Cut();
         }
         
         // Копировать
         private void копироватьToolStripMenuItem_Click(object sender, EventArgs e)
         {
-           //program.richTextBox1.Copy();
+            programForm.richTextBox1.Copy();
         }
 
         // Вставить
         private void вставитьToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //program.richTextBox1.Paste();
+            programForm.richTextBox1.Paste();
         }
 
 
+        private void окноРегистровToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            registersForm.Visible = окноРегистровToolStripMenuItem.Checked;
+        }
+
+        private void окноПрограммыToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            programForm.Visible = окноПрограммыToolStripMenuItem.Checked;
+        }
+
+        private void окноВыводаToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            outputForm.Visible = окноВыводаToolStripMenuItem.Checked;
+        }
+
+
+        private void MainForm_Shown(object sender, EventArgs e)
+        {
+            // Выводим и располагаем формы
+            programForm.MdiParent = registersForm.MdiParent = outputForm.MdiParent = this;
+
+            programForm.Left = 0;
+            programForm.Top = 0;
+            programForm.Size = new System.Drawing.Size(300, 470);
+            programForm.Show();
+            programForm.richTextBox1.Lines = File.ReadAllLines("add.asm");
+
+            registersForm.Show();
+            registersForm.Left = programForm.Right;
+            registersForm.Top = 0;
+
+            outputForm.Left = programForm.Right;
+            outputForm.Top = registersForm.Bottom;
+            outputForm.Size = new Size(registersForm.Width, programForm.Height - outputForm.Top);
+            outputForm.Show();
+        }
+
+        private void toolStripButton_Execute_Click(object sender, EventArgs e)
+        {
+            programForm.ExecuteProgram();
+        }
+
+        private void toolStripButton_Step_Click(object sender, EventArgs e)
+        {
+            programForm.ExecuteProgramStep();
+        }
+
+        private void toolStripButton_Stop_Click(object sender, EventArgs e)
+        {
+            programForm.StopProgram();
+        }
+
+        private void отменаToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int tag = int.Parse(((ToolStripMenuItem)sender).Tag.ToString());
+            if (tag == 0) programForm.richTextBox1.Undo();
+            else if (tag == 1) programForm.richTextBox1.Redo();
+            else if (tag == 2) programForm.richTextBox1.Cut();
+            else if (tag == 3) programForm.richTextBox1.Copy();
+            else if (tag == 4) programForm.richTextBox1.Paste();
+        }
     }
 }

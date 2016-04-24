@@ -27,11 +27,6 @@ namespace Emulator
         public ProgramForm(Processor proc)
         {
             InitializeComponent();
-            toolTip.SetToolTip(buttonStart, "Старт программы");
-            toolTip.SetToolTip(buttonNext, "Шаг вперед");
-            //toolTip.SetToolTip(buttonBack, "Шаг назад");
-            toolTip.SetToolTip(buttonStop, "Остановить программу");
-            //toolTip.SetToolTip(ButtonRestart, "Перезапуск");
 
             _processor = proc;
             asm = _processor.GetAssembler();
@@ -40,15 +35,17 @@ namespace Emulator
 
         private void ProgramForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Application.Exit();
+            if(e.CloseReason != CloseReason.MdiFormClosing)
+            {
+                e.Cancel = true;
+                this.Visible = MainForm.Instance.окноПрограммыToolStripMenuItem.Checked = false;
+            }
         }
 
-        private void ButtonStart_MouseEnter(object sender, EventArgs e)
-        {
-            
-        }
-
-        private void buttonStart_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Выполнить программу
+        /// </summary>
+        public void ExecuteProgram()
         {
             LoadAsmFromRichText();
             if (asm.ProgramReady)
@@ -56,19 +53,22 @@ namespace Emulator
                 while (!asm.ProgramEnd)
                 {
                     asm.ExecuteInstruction();
-                    MainForm.registersForm.UpdateView();
+                    MainForm.Instance.registersForm.UpdateView();
                 }
             }
         }
 
-        private void buttonNext_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Выполнить шаг программы
+        /// </summary>
+        public void ExecuteProgramStep()
         {
             // Если программа не готова, загрузить
             if (!asm.ProgramExecuting)
             {
                 LoadAsmFromRichText(true);
                 _processor.ResetRegisters();
-                richTextBox1.ReadOnly = buttonStop.Enabled = true;
+                richTextBox1.ReadOnly = MainForm.Instance.toolStripButton_Stop.Enabled = true;
                 this.UpdateView();
             }
             else
@@ -78,7 +78,10 @@ namespace Emulator
             }
         }
 
-        private void buttonStop_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Остановить выполнение программы
+        /// </summary>
+        public void StopProgram()
         {
             asm.ProgramEnd = true;
             this.UpdateView();
@@ -104,9 +107,9 @@ namespace Emulator
             }
             else
             {
-                richTextBox1.ReadOnly = buttonStop.Enabled = false;
+                richTextBox1.ReadOnly = MainForm.Instance.toolStripButton_Stop.Enabled = false;
             }
-            MainForm.registersForm.UpdateView(showChanges);
+            MainForm.Instance.registersForm.UpdateView(showChanges);
         }
         
         /// <summary>
