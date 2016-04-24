@@ -6,11 +6,11 @@ namespace Emulator
     using RT = Register.Types;
 
     // Класс процессор
-    class Processor
+    public class Processor
     {
         public Register AX, BX, CX, DX, SI, DI, BP, SP, CS, DS, ES, SS, IP, Flags;
         public Stack stack;
-        public Assembler assembler;
+        private Assembler _assembler;
         private Register _privateRegister;
 
         public Processor()
@@ -31,9 +31,13 @@ namespace Emulator
             Flags = new Register();
 
             stack = new Stack(this);
-            assembler = new Assembler(this);
-
+            _assembler = new Assembler(this);
             _privateRegister = new Register();
+        }
+
+        public Assembler GetAssembler()
+        {
+            return _assembler;
         }
         
         // Возвращает регистр по имени
@@ -261,75 +265,75 @@ namespace Emulator
         /** JZ/JE **/
         public void JZ(object a)
         {
-            if (this.Flags.GetFlag(Register.Flags.ZF)) assembler.JumpOnLabel((string)a);
+            if (this.Flags.GetFlag(Register.Flags.ZF)) _assembler.JumpOnLabel((string)a);
         }
 
         /** JNZ **/
         public void JNZ(object a)
         {
-            if(!this.Flags.GetFlag(Register.Flags.ZF)) assembler.JumpOnLabel((string)a);
+            if(!this.Flags.GetFlag(Register.Flags.ZF)) _assembler.JumpOnLabel((string)a);
         }
 
         /** JC **/
         public void JC(object a)
         {
-            if (this.Flags.GetFlag(Register.Flags.CF)) assembler.JumpOnLabel((string)a);
+            if (this.Flags.GetFlag(Register.Flags.CF)) _assembler.JumpOnLabel((string)a);
         }
 
         /** JNC **/
         public void JNC(object a)
         {
-            if (!this.Flags.GetFlag(Register.Flags.CF)) assembler.JumpOnLabel((string)a);
+            if (!this.Flags.GetFlag(Register.Flags.CF)) _assembler.JumpOnLabel((string)a);
         }
 
         /** JP **/
         public void JP(object a)
         {
-            if (this.Flags.GetFlag(Register.Flags.PF)) assembler.JumpOnLabel((string)a);
+            if (this.Flags.GetFlag(Register.Flags.PF)) _assembler.JumpOnLabel((string)a);
         }
 
         /** JNP **/
         public void JNP(object a)
         {
-            if (!this.Flags.GetFlag(Register.Flags.PF)) assembler.JumpOnLabel((string)a);
+            if (!this.Flags.GetFlag(Register.Flags.PF)) _assembler.JumpOnLabel((string)a);
         }
 
         /** JS **/
         public void JS(object a)
         {
-            if (this.Flags.GetFlag(Register.Flags.SF)) assembler.JumpOnLabel((string)a);
+            if (this.Flags.GetFlag(Register.Flags.SF)) _assembler.JumpOnLabel((string)a);
         }
 
         /** JNS **/
         public void JNS(object a)
         {
-            if (!this.Flags.GetFlag(Register.Flags.SF)) assembler.JumpOnLabel((string)a);
+            if (!this.Flags.GetFlag(Register.Flags.SF)) _assembler.JumpOnLabel((string)a);
         }
 
         /** JO **/
         public void JO(object a)
         {
-            if (this.Flags.GetFlag(Register.Flags.OF)) assembler.JumpOnLabel((string)a);
+            if (this.Flags.GetFlag(Register.Flags.OF)) _assembler.JumpOnLabel((string)a);
         }
 
         /** JNO **/
         public void JNO(object a)
         {
-            if (!this.Flags.GetFlag(Register.Flags.OF)) assembler.JumpOnLabel((string)a);
+            if (!this.Flags.GetFlag(Register.Flags.OF)) _assembler.JumpOnLabel((string)a);
         }
 
         /** JA **/
         public void JA(object a)
         {
             if (!this.Flags.GetFlag(Register.Flags.CF) && !this.Flags.GetFlag(Register.Flags.ZF))
-                assembler.JumpOnLabel((string)a);
+                _assembler.JumpOnLabel((string)a);
         }
 
         /** JNA **/
         public void JNA(object a)
         {
             if (this.Flags.GetFlag(Register.Flags.CF) && this.Flags.GetFlag(Register.Flags.ZF))
-                assembler.JumpOnLabel((string)a);
+                _assembler.JumpOnLabel((string)a);
         }
 
         /** JG **/
@@ -337,21 +341,21 @@ namespace Emulator
         {
             if (!this.Flags.GetFlag(Register.Flags.ZF) &&
                 this.Flags.GetFlag(Register.Flags.SF) == this.Flags.GetFlag(Register.Flags.OF))
-                assembler.JumpOnLabel((string)a);
+                _assembler.JumpOnLabel((string)a);
         }
 
         /** JGE **/
         public void JGE(object a)
         {
             if (this.Flags.GetFlag(Register.Flags.SF) == this.Flags.GetFlag(Register.Flags.OF))
-                assembler.JumpOnLabel((string)a);
+                _assembler.JumpOnLabel((string)a);
         }
 
         /** JL **/
         public void JL(object a)
         {
             if (this.Flags.GetFlag(Register.Flags.SF) != this.Flags.GetFlag(Register.Flags.OF))
-                assembler.JumpOnLabel((string)a);
+                _assembler.JumpOnLabel((string)a);
         }
 
         /** JLE **/
@@ -359,20 +363,20 @@ namespace Emulator
         {
             if (this.Flags.GetFlag(Register.Flags.ZF) &&
                 this.Flags.GetFlag(Register.Flags.SF) != this.Flags.GetFlag(Register.Flags.OF))
-                assembler.JumpOnLabel((string)a);
+                _assembler.JumpOnLabel((string)a);
         }
 
         /** JCXZ **/
         public void JCXZ(object a)
         {
             if (this.CX.Decimal == 0)
-                assembler.JumpOnLabel((string)a);
+                _assembler.JumpOnLabel((string)a);
         }
 
         /** JMP **/ //*****************************************
         public void Jmp(object a)
         {
-            assembler.JumpOnLabel((string)a);
+            _assembler.JumpOnLabel((string)a);
         }
 
         /** LAHF **/
@@ -400,7 +404,7 @@ namespace Emulator
         {
             CX.Decimal--;
             if (CX.Decimal != 0)
-                assembler.JumpOnLabel((string)a);
+                _assembler.JumpOnLabel((string)a);
         }
 
         /** LOOPNZ **/ //*****************************************(после RET)
@@ -408,7 +412,7 @@ namespace Emulator
         {
             CX.Decimal--;
             if (CX.Decimal != 0 && !this.Flags.GetFlag(Register.Flags.ZF))
-                assembler.JumpOnLabel((string)a);
+                _assembler.JumpOnLabel((string)a);
         }
 
         /** LOOPZ **/ //*****************************************(после RET)
@@ -416,7 +420,7 @@ namespace Emulator
         {
             CX.Decimal--;
             if (CX.Decimal != 0 && this.Flags.GetFlag(Register.Flags.ZF))
-                assembler.JumpOnLabel((string)a);
+                _assembler.JumpOnLabel((string)a);
         }
 
         public void Movsb()

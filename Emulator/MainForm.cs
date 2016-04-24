@@ -12,20 +12,32 @@ namespace Emulator
     public partial class MainForm : Form
     {
         private RegistersForm registersForm;
-        //private ProgramForm program;
+        private ProgramForm programForm;
         //private DebugForm debug;
         //private OutputForm output;
+
+        private Processor processor = null;
+        private Assembler assembler;
 
         public MainForm()
         {
             InitializeComponent();
 
+            processor = new Processor();
+            assembler = processor.GetAssembler();
+
             // Выводим и располагаем формы
-            registersForm = new RegistersForm();
+            registersForm = new RegistersForm(processor);
             registersForm.MdiParent = this;
             registersForm.Left = 0;
             registersForm.Top = 0;
             registersForm.Show();
+
+            programForm = new ProgramForm();
+            programForm.MdiParent = this;
+            programForm.Left = registersForm.Right + 2;
+            programForm.Top = 0;
+            programForm.Show();
 
             /*program = new ProgramForm();
             program.MdiParent = this;
@@ -71,7 +83,7 @@ namespace Emulator
             Console.WriteLine(R.GetFlag(Register.Flags.AF));
             Console.WriteLine(R.GetFlag(Register.Flags.DF));*/
 
-            Processor processor = new Processor();
+            //Processor processor = new Processor();
             // 65535
 
 //            processor.AX.Value.Binary = "1011000010001000";
@@ -164,13 +176,15 @@ namespace Emulator
 
             // Assembler
             //assembler = new Assembler(processor);
-            Assembler assembler = processor.assembler;
+            //Assembler assembler = processor.assembler;
             assembler.LoadAsmFromFile("add.asm");
             while (!assembler.ProgramEnd)
             {
                 assembler.ExecuteInstruction();
+                registersForm.UpdateView();
             }
             Console.WriteLine(processor.AX.Decimal);
+            //registersForm.UpdateView();
             /*
             assembler.ExecuteInstruction();
             assembler.ExecuteInstruction();
@@ -214,6 +228,7 @@ namespace Emulator
         // Создать
         private void создатьToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            registersForm.UpdateView();
             //program.richTextBox1.Clear(); 
         }
         
@@ -246,6 +261,7 @@ namespace Emulator
         {
             //program.richTextBox1.Paste();
         }
+
 
     }
 }

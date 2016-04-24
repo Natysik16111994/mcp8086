@@ -5,14 +5,14 @@ using System.Text;
 
 namespace Emulator
 {
-    enum aiOperandType
+    public enum aiOperandType
     {
         Register,
         Value,
         Null
     };
 
-    struct AsmInstruction
+    public struct AsmInstruction
     {
         public string opcode, operand1, operand2;
         public int line;
@@ -20,7 +20,7 @@ namespace Emulator
         public Register.Types regtype1, regtype2;
     }
 
-    class Assembler
+    public class Assembler
     {
         private Processor processor;
 

@@ -5,7 +5,7 @@ using System.Text;
 namespace Emulator
 {
     // Класс Регистр
-    class Register
+    public class Register
     {
         public BinaryNumber Value;
 
@@ -80,6 +80,30 @@ namespace Emulator
                 double d = 0;
                 for (int i = 8; i < 16; i++) d += (this.Value.Number[i] ? 1 : 0) * Math.Pow(2, 15 - i);
                 return Convert.ToInt32(d);
+            }
+        }
+
+        public string HighHex
+        {
+            get
+            {
+                return BinaryNumber.GetHex(HighDecimal, 2);
+            }
+        }
+
+        public string LowHex
+        {
+            get
+            {
+                return BinaryNumber.GetHex(LowDecimal, 2);
+            }
+        }
+
+        public string Hex
+        {
+            get
+            {
+                return BinaryNumber.GetHex(Decimal, 4);
             }
         }
 

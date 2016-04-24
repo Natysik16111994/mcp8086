@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Emulator
 {
-    class BinaryNumber
+    public class BinaryNumber
     {
         public const int MaxUnsignedDecimal = 65535;
 
@@ -365,6 +365,33 @@ namespace Emulator
                 }
             }
             return BinaryNumber.GetDecimal(a, 2);
+        }
+
+        /// <summary>
+        /// Преобразует десятичное число в шестнадцатеричное
+        /// </summary>
+        /// <param name="dec">Десятичное число</param>
+        /// <param name="digits">Количество цифр (при 0 количество цифр не фиксируется)</param>
+        /// <returns></returns>
+        public static string GetHex(int dec, int digits = 0)
+        {
+            const string table = "ABCDEF";
+            List<string> hex = new List<string>();
+            while (dec > 0)
+            {
+                int a = dec % 16;
+                dec /= 16;
+                hex.Add((a < 10 ? a.ToString() : table.Substring(a - 10, 1)));
+            }
+            if (dec != 0) hex.Add(dec < 10 ? dec.ToString() : table.Substring(dec - 10, 1));
+            if (hex.Count == 0) hex.Add("0");
+            hex.Reverse();
+            if(digits != 0 && hex.Count != digits)
+            {
+                if(hex.Count > digits) hex.RemoveRange(0, hex.Count - digits);
+                while (hex.Count < digits) hex.Insert(0, "0");
+            }
+            return String.Join("", hex.ToArray());
         }
     }
 }
