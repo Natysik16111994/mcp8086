@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // Управление общими сведениями о сборке осуществляется с помощью 
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
-[assembly: AssemblyTitle("Emulator")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Модель процессора Intel 8086")]
+[assembly: AssemblyDescription("Программная модель процессора")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Emulator")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
+[assembly: AssemblyCompany("Natalia Loginova")]
+[assembly: AssemblyProduct("Модель процессора Intel 8086")]
+[assembly: AssemblyCopyright("Copyright © Natalia Loginova, 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -156,7 +156,7 @@ namespace Emulator
             programForm.Top = 0;
             programForm.Size = new System.Drawing.Size(300, 470);
             programForm.Show();
-            programForm.richTextBox1.Lines = File.ReadAllLines("add.asm");
+            //programForm.richTextBox1.Lines = File.ReadAllLines("add.asm");
 
             registersForm.Left = programForm.Right;
             registersForm.Top = 0;

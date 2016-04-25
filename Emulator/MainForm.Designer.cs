@@ -416,7 +416,6 @@
             // 
             // openFileDialog1
             // 
-            this.openFileDialog1.FileName = "openFileDialog1";
             this.openFileDialog1.Filter = "Файлы ассемблера (*.asm)|*.asm|Текстовые файлы (*.txt)|*.txt|Все файлы (*.*)|*.*";
             // 
             // MainForm
