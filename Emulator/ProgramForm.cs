@@ -78,7 +78,8 @@ jnz start
             {
                 LoadAsmFromRichText(true);
                 _processor.ResetRegisters();
-                richTextBox1.ReadOnly = MainForm.Instance.toolStripButton_Stop.Enabled = true;
+                richTextBox1.ReadOnly = MainForm.Instance.toolStripButton_Stop.Enabled =
+                    MainForm.Instance.остановитьПрограммуToolStripMenuItem.Enabled = true;
                 MainForm.Instance.toolStripButton_Execute.Enabled = MainForm.Instance.выполнитьПрограммуToolStripMenuItem.Enabled = false;
                 this.UpdateView();
                 MainForm.Instance.WriteConsole("Начато пошаговое выполнение программы.");
@@ -119,7 +120,8 @@ jnz start
             }
             else
             {
-                richTextBox1.ReadOnly = MainForm.Instance.toolStripButton_Stop.Enabled = false;
+                richTextBox1.ReadOnly = MainForm.Instance.toolStripButton_Stop.Enabled =
+                    MainForm.Instance.остановитьПрограммуToolStripMenuItem.Enabled = false;
                 MainForm.Instance.toolStripButton_Execute.Enabled = MainForm.Instance.выполнитьПрограммуToolStripMenuItem.Enabled = true;
                 MainForm.Instance.WriteConsole("Завершено пошаговое выполнение.");
             }
