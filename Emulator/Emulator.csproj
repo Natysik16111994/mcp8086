@@ -116,52 +116,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\1454416503_gtk-media-play-ltr.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\1454416529_gtk-media-play-rtl.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\1454416520_mail-forward.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\1454416527_repeat.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\1454416983_gtk-media-play-ltr.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\1454416987_mail-forward.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\1454416990_repeat.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\1454417458_update.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\1454417459_resultset_last.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\1454417453_resultset_next.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\1454417456_resultset_first.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\1454418698_update.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\1454418802_resultset_next.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\1454418848_resultset_first.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\1454418842_resultset_last.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\shape_square.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shape_square_16.png" />

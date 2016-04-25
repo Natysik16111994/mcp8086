@@ -65,6 +65,8 @@
             this.toolStripButton_Stop = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripButton_Info = new System.Windows.Forms.ToolStripButton();
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -134,6 +136,7 @@
                         | System.Windows.Forms.Keys.S)));
             this.сохранитьКакToolStripMenuItem.Size = new System.Drawing.Size(234, 22);
             this.сохранитьКакToolStripMenuItem.Text = "Сохранить как...";
+            this.сохранитьКакToolStripMenuItem.Click += new System.EventHandler(this.сохранитьКакToolStripMenuItem_Click);
             // 
             // toolStripMenuItem2
             // 
@@ -245,6 +248,7 @@
             // 
             // остановитьПрограммуToolStripMenuItem
             // 
+            this.остановитьПрограммуToolStripMenuItem.Enabled = false;
             this.остановитьПрограммуToolStripMenuItem.Name = "остановитьПрограммуToolStripMenuItem";
             this.остановитьПрограммуToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.F5)));
             this.остановитьПрограммуToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
@@ -332,6 +336,7 @@
             this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton1.Text = "toolStripButton_New";
             this.toolStripButton1.ToolTipText = "Новый файл";
+            this.toolStripButton1.Click += new System.EventHandler(this.создатьToolStripMenuItem_Click);
             // 
             // toolStripButton_Open
             // 
@@ -341,6 +346,7 @@
             this.toolStripButton_Open.Name = "toolStripButton_Open";
             this.toolStripButton_Open.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton_Open.Text = "Открыть";
+            this.toolStripButton_Open.Click += new System.EventHandler(this.открытьToolStripMenuItem_Click);
             // 
             // toolStripButton_Save
             // 
@@ -350,6 +356,7 @@
             this.toolStripButton_Save.Name = "toolStripButton_Save";
             this.toolStripButton_Save.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton_Save.Text = "Сохранить";
+            this.toolStripButton_Save.Click += new System.EventHandler(this.сохранитьToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -403,6 +410,15 @@
             this.toolStripButton_Info.Text = "toolStripButton2";
             this.toolStripButton_Info.ToolTipText = "Справка";
             // 
+            // saveFileDialog1
+            // 
+            this.saveFileDialog1.Filter = "Файлы ассемблера (*.asm)|*.asm|Текстовые файлы (*.txt)|*.txt|Все файлы (*.*)|*.*";
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog1";
+            this.openFileDialog1.Filter = "Файлы ассемблера (*.asm)|*.asm|Текстовые файлы (*.txt)|*.txt|Все файлы (*.*)|*.*";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -444,9 +460,6 @@
         public System.Windows.Forms.ToolStripButton toolStripButton_Step;
         public System.Windows.Forms.ToolStripButton toolStripButton_Stop;
         private System.Windows.Forms.ToolStripMenuItem программаToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem выполнитьПрограммуToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem пошаговоеВыполнениеToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem остановитьПрограммуToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
         private System.Windows.Forms.ToolStripMenuItem сохранитьКакToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem видToolStripMenuItem;
@@ -464,6 +477,11 @@
         private System.Windows.Forms.ToolStripMenuItem вырезатьToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem копироватьToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem вставитьToolStripMenuItem;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        public System.Windows.Forms.ToolStripMenuItem выполнитьПрограммуToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem пошаговоеВыполнениеToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem остановитьПрограммуToolStripMenuItem;
     }
 }
 

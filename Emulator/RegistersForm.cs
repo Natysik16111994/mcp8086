@@ -50,6 +50,7 @@ namespace Emulator
             SetText(labelFlagAF, _processor.Flags.GetFlag(Register.Flags.AF) ? "1" : "0", showChanges);
             SetText(labelFlagPF, _processor.Flags.GetFlag(Register.Flags.PF) ? "1" : "0", showChanges);
             SetText(labelFlagCF, _processor.Flags.GetFlag(Register.Flags.CF) ? "1" : "0", showChanges);
+            this.Update();
         }
 
         /// <summary>

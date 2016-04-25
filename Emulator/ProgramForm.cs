@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace Emulator
@@ -42,20 +43,29 @@ namespace Emulator
             }
         }
 
+        /*
+mov ax, 16000
+start:
+dec ax
+jnz start
+         */
+
+
         /// <summary>
         /// Выполнить программу
         /// </summary>
         public void ExecuteProgram()
         {
+            MainForm.Instance.выполнитьПрограммуToolStripMenuItem.Enabled = MainForm.Instance.toolStripButton_Execute.Enabled =
+            MainForm.Instance.toolStripButton_Step.Enabled = MainForm.Instance.пошаговоеВыполнениеToolStripMenuItem.Enabled = false;
+            MainForm.Instance.остановитьПрограммуToolStripMenuItem.Enabled = MainForm.Instance.toolStripButton_Stop.Enabled = true;
+            richTextBox1.ReadOnly = true;
+            MainForm.Instance.Update();
+
             LoadAsmFromRichText();
-            if (asm.ProgramReady)
-            {
-                while (!asm.ProgramEnd)
-                {
-                    asm.ExecuteInstruction();
-                    MainForm.Instance.registersForm.UpdateView();
-                }
-            }
+            _processor.ResetRegisters();
+            this.backgroundWorker1.RunWorkerAsync();
+            MainForm.Instance.WriteConsole("Начато выполнение программы.");
         }
 
         /// <summary>
@@ -69,7 +79,9 @@ namespace Emulator
                 LoadAsmFromRichText(true);
                 _processor.ResetRegisters();
                 richTextBox1.ReadOnly = MainForm.Instance.toolStripButton_Stop.Enabled = true;
+                MainForm.Instance.toolStripButton_Execute.Enabled = MainForm.Instance.выполнитьПрограммуToolStripMenuItem.Enabled = false;
                 this.UpdateView();
+                MainForm.Instance.WriteConsole("Начато пошаговое выполнение программы.");
             }
             else
             {
@@ -108,7 +120,10 @@ namespace Emulator
             else
             {
                 richTextBox1.ReadOnly = MainForm.Instance.toolStripButton_Stop.Enabled = false;
+                MainForm.Instance.toolStripButton_Execute.Enabled = MainForm.Instance.выполнитьПрограммуToolStripMenuItem.Enabled = true;
+                MainForm.Instance.WriteConsole("Завершено пошаговое выполнение.");
             }
+            this.Update();
             MainForm.Instance.registersForm.UpdateView(showChanges);
         }
         
@@ -129,6 +144,36 @@ namespace Emulator
                     linesInfo.Add(i, new LineInfo(start, length));
                 }
             }
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker worker = sender as BackgroundWorker;
+            int progress = 0;
+            if (asm.ProgramReady)
+            {
+                while (!asm.ProgramEnd)
+                {
+                    asm.ExecuteInstruction();
+                    progress += (progress == 0 ? 1 : -1);
+                    worker.ReportProgress(progress);
+                    Thread.Sleep(1);
+                }
+            }
+        }
+
+        private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            MainForm.Instance.registersForm.UpdateView(true);
+        }
+
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            MainForm.Instance.выполнитьПрограммуToolStripMenuItem.Enabled = MainForm.Instance.toolStripButton_Execute.Enabled =
+            MainForm.Instance.toolStripButton_Step.Enabled = MainForm.Instance.пошаговоеВыполнениеToolStripMenuItem.Enabled = true;
+            MainForm.Instance.остановитьПрограммуToolStripMenuItem.Enabled = MainForm.Instance.toolStripButton_Stop.Enabled = false;
+            richTextBox1.ReadOnly = false;
+            MainForm.Instance.WriteConsole("Выполнение программы завершено.");
         }
     }
 }
