@@ -112,8 +112,19 @@ namespace Emulator
             Pop(_processor.CX);
             Pop(_processor.AX);   
         }
-    // PUSHF
-    // POPF
+
+        // В стек записывается значение FLAGS  // Нужно будет проверить
+        // PUSHF
+        public void Pushf()
+        {
+            Push(_processor.Flags);
+        }
+
+        // POPF
+        public void Popf()
+        {
+            Pop(_processor.Flags);
+        }
        
     }
 }

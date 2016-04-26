@@ -314,6 +314,14 @@ namespace Emulator
             return bin;
         }
 
+        // Преобразует десятичное знаковое число в двоичное
+        public static bool[] GetSingBinary(int dec)
+        {
+            bool[] bin = GetBinary(dec);
+            if (dec < 0) bin[0] = true;
+            return bin;
+        }
+
         // Перевод числа в десятичное
         public static int GetDecimal(string n, int b)
         {
@@ -331,6 +339,7 @@ namespace Emulator
             return (int) d;
         }
 
+
         // Перевод числа в десятичное
         public static int GetDecimal(params bool[][] bin)
         {
@@ -344,5 +353,31 @@ namespace Emulator
             }
             return BinaryNumber.GetDecimal(a, 2);
         }
+
+        // Перевод знакового числа в десятичное
+        public static int GetSingDecimal(string n, int b)
+        {
+            string z = n.Substring(0, 1);
+            n = "0" + n.Substring(1);
+            int d = GetDecimal(n, b);
+            if (z == "1") d = d * (-1);  
+            return d;
+        }
+
+        // Перевод знакового числа в десятичное ????????????????????? (нужна проверка)
+        public static int GetSingDecimal(params bool[][] bin)
+        {
+            bool z = bin[0][0];
+            int dec = 0;
+            if (bin[0][0] == true)
+            {
+                bin[0][0] = false;
+                dec = BinaryNumber.GetDecimal(bin);
+                dec = dec * (-1);
+            }
+            dec = BinaryNumber.GetDecimal(bin);
+            return dec;
+        }
+
     }
 }
