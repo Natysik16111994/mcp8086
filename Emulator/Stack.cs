@@ -5,7 +5,7 @@ using System.Text;
 namespace Emulator
 {   
     // Класс Стек
-    class Stack
+    public class Stack
     {
         public List<int> list;
         private const int constNumber = 16;

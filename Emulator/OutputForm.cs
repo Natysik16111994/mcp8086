@@ -14,5 +14,14 @@ namespace Emulator
         {
             InitializeComponent();
         }
+
+        private void OutputForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason != CloseReason.MdiFormClosing)
+            {
+                e.Cancel = true;
+                this.Visible = MainForm.Instance.окноВыводаToolStripMenuItem.Checked = false;
+            }
+        }
     }
 }

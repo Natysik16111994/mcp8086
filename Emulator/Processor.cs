@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
 namespace Emulator
 {   
+    using RT = Register.Types;
+
     // Класс процессор
-    class Processor
+    public class Processor
     {
         public Register AX, BX, CX, DX, SI, DI, BP, SP, CS, DS, ES, SS, IP, Flags;
         public Stack stack;
+        private Assembler _assembler;
+        private Register _privateRegister;
 
         public Processor()
         {
@@ -28,72 +31,88 @@ namespace Emulator
             Flags = new Register();
 
             stack = new Stack(this);
+            _assembler = new Assembler(this);
+            _privateRegister = new Register();
+        }
+
+        /// <summary>
+        /// Возвращает экземпляр ассемблера
+        /// </summary>
+        /// <returns></returns>
+        public Assembler GetAssembler()
+        {
+            return _assembler;
+        }
+        
+        /// <summary>
+        /// Возвращает регистр по имени
+        /// </summary>
+        /// <param name="name">Имя регистра</param>
+        /// <returns>Возвращает регистр если есть, в ином случае null.</returns>
+        public Register GetRegisterByName(string name)
+        {
+            if (name.Length != 2) return null;
+            name = name.ToLower();
+            if (name.Substring(1, 1) == "l" || name.Substring(1, 1) == "h") name = name.Substring(0, 1) + "x";
+            if (name == "ax") return this.AX;
+            else if (name == "bx") return this.BX;
+            else if (name == "cx") return this.CX;
+            else if (name == "dx") return this.DX;
+            else if (name == "si") return this.SI;
+            else if (name == "di") return this.DI;
+            else if (name == "bp") return this.BP;
+            else if (name == "sp") return this.SP;
+            else if (name == "cs") return this.CS;
+            else if (name == "ds") return this.DS;
+            else if (name == "es") return this.ES;
+            else if (name == "ss") return this.SS;
+            else if (name == "ip") return this.IP;
+            return null;
+        }
+
+        /// <summary>
+        /// Сбрасывает состояние регистров
+        /// </summary>
+        public void ResetRegisters()
+        {
+            AX.Decimal = BX.Decimal = CX.Decimal = DX.Decimal = 0;
+            SI.Decimal = DI.Decimal = 0;
+            BP.Decimal = SP.Decimal = 0;
+            CS.Decimal = DS.Decimal = ES.Decimal = SS.Decimal = 0;
+            IP.Decimal = 0;
+            Flags.Decimal = 0;
         }
 
         /** ADD **/
-        public void Add(Register a, Register b)
+        public void Add(Register a, object b, RT at, RT bt)
         {
-            a.Value += b.Value;
-            a.UpdateFlags(this.Flags);
-        }
-
-        public void Add(Register a, string d, int b)
-        {
-            a.Value += BinaryNumber.GetDecimal(d, b);
+            SetRegisterValue(a, at, GetRegisterValue(a, at) + GetValueFromObject(b, bt));
             a.UpdateFlags(this.Flags);
         }
 
         /** ADC **/
-        public void Adc(Register a, Register b)
+        public void Adc(Register a, object b, RT at, RT bt)
         {
-            a.Value += b.Value;
-            if (a.Value.CarryFlag) a.Value += 1;
-            a.UpdateFlags(this.Flags);
-        }
-
-        public void Adc(Register a, string n, int b)
-        {
-            a.Value += BinaryNumber.GetDecimal(n, b);
-            if (a.Value.CarryFlag) a.Value += 1;
+            SetRegisterValue(a, at, GetRegisterValue(a, at) + GetValueFromObject(b, bt));
+            if (a.Value.CarryFlag) a.Decimal += 1;
             a.UpdateFlags(this.Flags);
         }
 
         /** AND **/
-        public void And(Register a, Register b)
+        public void And(Register a, object b, RT at, RT bt)
         {
-            for (int i = 0; i < 16; i++) a.Value.Number[i] = a.Value.Number[i] && b.Value.Number[i];
-            a.UpdateFlags(this.Flags);
-            this.Flags.SetFlag(false, Register.Flags.CF, Register.Flags.OF);
-        }
-
-        public void And(Register a, string n, int b)
-        { 
-            bool[] c = BinaryNumber.GetBinary(BinaryNumber.GetDecimal(n, b));
-            for (int i = 0; i < 16; i++) a.Value.Number[i] = a.Value.Number[i] && c[i];
+            bool[] reg1 = BinaryNumber.GetBinary(GetRegisterValue(a, at));
+            bool[] reg2 = BinaryNumber.GetBinary(GetValueFromObject(b, bt));
+            for (int i = 0; i < 16; i++) reg1[i] &= reg2[i];
+            SetRegisterValue(a, at, BinaryNumber.GetDecimal(reg1));
             a.UpdateFlags(this.Flags);
             this.Flags.SetFlag(false, Register.Flags.CF, Register.Flags.OF);
         }
 
         /** BSF **/
-        public void Bsf(Register dest, Register src)
+        public void Bsf(Register dest, object src)
         {
-            int pos = -1;
-            for (int i = src.Value.Number.Length - 1; i >= 0; i--)
-            {
-                if (src.Value.Number[i])
-                {
-                    pos = src.Value.Number.Length - i - 1;
-                    break;
-                }
-            }
-            dest.Value.Decimal = (pos == -1 ? 0 : pos);
-            dest.UpdateFlags(this.Flags);
-            this.Flags.SetFlag((pos == -1), Register.Flags.ZF);
-        }
-
-        public void Bsf(Register dest, string n, int b)
-        {
-            bool[] c = BinaryNumber.GetBinary(BinaryNumber.GetDecimal(n, b));
+            bool[] c = BinaryNumber.GetBinary(GetValueFromObject(src));
             int pos = -1;
             for (int i = c.Length - 1; i >= 0; i--)
             {
@@ -105,31 +124,15 @@ namespace Emulator
             }
             dest.Value.Decimal = (pos == -1 ? 0 : pos);
             dest.UpdateFlags(this.Flags);
-            this.Flags.SetFlag((pos == -1), Register.Flags.ZF); 
+            this.Flags.SetFlag((pos == -1), Register.Flags.ZF);
         }
 
         //-------------------------------------------------------------------
         /** BSR **/
-        public void Bsr(Register dest, Register src)
+        public void Bsr(Register dest, object src)
         {
-            int pos = -1;
-            for (int i = 0; i < src.Value.Number.Length; i++)
-            {
-                if (src.Value.Number[i])
-                {
-                    pos = src.Value.Number.Length - i - 1;
-                    break;
-                }
-            }
-            dest.Value.Decimal = (pos == -1 ? 0 : pos);
-            dest.UpdateFlags(this.Flags);
-            this.Flags.SetFlag((pos == -1), Register.Flags.ZF);
-        }
-
-        public void Bsr(Register dest, string n, int b)
-        {
-            bool[] c = BinaryNumber.GetBinary(BinaryNumber.GetDecimal(n, b));
-            int pos = -1;
+            bool[] c = BinaryNumber.GetBinary(GetValueFromObject(src));
+            int pos = 0;
             for (int i = 0; i < c.Length; i++)
             {
                 if (c[i])
@@ -220,12 +223,12 @@ namespace Emulator
         }
 
         /** CMP **/ 
-        public void Cmp(Register dest, Register src)
+        public void Cmp(object a, object b, RT at, RT bt)
         {
-            int b = dest.Value.Decimal;
-            dest.Value.Decimal = Math.Abs(dest.Value.Decimal - src.Value.Decimal);
-            dest.UpdateFlags(this.Flags);
-            dest.Value.Decimal = b;
+            int av = GetValueFromObject(a, at);
+            int bv = GetValueFromObject(b, bt);
+            _privateRegister.Decimal = Math.Abs(av - bv);
+            _privateRegister.UpdateFlags(this.Flags);
         }
 
         /** CWD **/
@@ -235,119 +238,167 @@ namespace Emulator
         }
 
         /** DEC **/
-        public void Dec(Register a)
+        public void Dec(Register a, RT at)
         {
-            a.Value.Decimal = a.Value.Decimal - 1;
+            SetRegisterValue(a, at, GetRegisterValue(a, at) - 1);
             a.UpdateFlags(this.Flags);
         }
 
-        /** DIV **/ 
-        public void Div(Register delit, bool half = false, bool high = false) // high указывает часть (верхняя или нижняя)
-        {   // если half = false, то слово (DX:AX)
-            if (!half)
-            {
-                int d = 0;
-                double dxax = 0;
-                for (int i = 0; i < AX.Value.Number.Length; i++)
-                {
-                    int ax = (AX.Value.Number[i] ? 1 : 0);
-                    int dx = (DX.Value.Number[i] ? 1 : 0);
-                    dxax += ax * Math.Pow(2, AX.Value.Number.Length - i - 1);
-                    dxax += dx * Math.Pow(2, AX.Value.Number.Length + DX.Value.Number.Length - i - 1);
-                }
-                d = delit.Value.Decimal;
-                AX.Value.Decimal = Convert.ToInt32(dxax) / d;
-                DX.Value.Decimal = Convert.ToInt32(dxax) % d;
-                AX.UpdateFlags(this.Flags);
-            }
-            // иначе байт(AX)
-            else
-            {
-                int ax = AX.Value.Decimal;
-                int d = 0;
-                if (high) d = BinaryNumber.GetDecimal(delit.GetHigh(), 2);
-                else d = BinaryNumber.GetDecimal(delit.GetLow(), 2);
-                AX.LowDecimal = ax / d;
-                AX.HighDecimal = ax % d;
-                AX.UpdateFlags(this.Flags);
-            }
-        }
-
-        // Для чисел
-        public void Div(string n, int b)
+        /** DIV **/
+        public void Div(object delit, RT delitT)
         {
-            int c = BinaryNumber.GetDecimal(n, b);
-            // если число превышает 255, то слово (DX:AX)
-            if (c > (Math.Pow(2,8) - 1))
+            int d = GetValueFromObject(delit, delitT);
+            if (d > 255) // делим DX:AX
             {
-                double dxax = 0;
-                for (int i = 0; i < AX.Value.Number.Length; i++)
-                {
-                    int ax = (AX.Value.Number[i] ? 1 : 0);
-                    int dx = (DX.Value.Number[i] ? 1 : 0);
-                    dxax += ax * Math.Pow(2, AX.Value.Number.Length - i - 1);
-                    dxax += dx * Math.Pow(2, AX.Value.Number.Length + DX.Value.Number.Length - i - 1);
-                }
-                AX.Value.Decimal = Convert.ToInt32(dxax) / BinaryNumber.GetDecimal(n, b);
-                DX.Value.Decimal = Convert.ToInt32(dxax) % BinaryNumber.GetDecimal(n, b);
-                AX.UpdateFlags(this.Flags);
+                int sum = BinaryNumber.GetDecimal(DX.Value.Binary + AX.Value.Binary, 2);
+                AX.Decimal = sum / d;
+                DX.Decimal = sum % d;
             }
-            // иначе байт(AX)
-            else
+            else // делим AX
             {
-                int ax = AX.Value.Decimal;
-                AX.LowDecimal = ax / BinaryNumber.GetDecimal(n, b);
-                AX.HighDecimal = ax % BinaryNumber.GetDecimal(n, b);
-                AX.UpdateFlags(this.Flags);
+                AX.Decimal = AX.Decimal / d;
             }
+            AX.UpdateFlags(this.Flags);
         }
 
         /** IDIV **/ //******************************************************
-        public void Idiv(Register delit, bool half = false, bool high = false)
+        public void Idiv(object delit, RT delitT)
         {
-            
         }
-
-        public void Idiv(string n, int b)
-        {
-            Div(n, b);  
-        }
-
+        
         /** ENTER **/ //*******************************************
-        public void Enter(Register delim, Register delit)
+        public void Enter()
         {
 
         }
 
         /** IMUL **/ //******************************************
-        public void Imul(Register a, bool half = false, bool high = false)
+        public void Imul(object m, RT mt)
         {
-            
-        }
-        
-        public void Imul(Register a, Register b)
-        {
-            
         }
 
         /** INC **/
-        public void Inc(Register a)
+        public void Inc(Register a, RT at)
         {
-            a.Value.Decimal = a.Value.Decimal + 1;
-            a.UpdateFlags(this.Flags);
+            SetRegisterValue(a, at, GetValueFromObject(a, at) + 1);
         }
 
         /** J(COND) **/ //*****************************************
         /** JZ/JE **/
-        public void JZ(Register delim, Register delit)
+        public void JZ(object a)
         {
-            
+            if (this.Flags.GetFlag(Register.Flags.ZF)) _assembler.JumpOnLabel((string)a);
+        }
+
+        /** JNZ **/
+        public void JNZ(object a)
+        {
+            if(!this.Flags.GetFlag(Register.Flags.ZF)) _assembler.JumpOnLabel((string)a);
+        }
+
+        /** JC **/
+        public void JC(object a)
+        {
+            if (this.Flags.GetFlag(Register.Flags.CF)) _assembler.JumpOnLabel((string)a);
+        }
+
+        /** JNC **/
+        public void JNC(object a)
+        {
+            if (!this.Flags.GetFlag(Register.Flags.CF)) _assembler.JumpOnLabel((string)a);
+        }
+
+        /** JP **/
+        public void JP(object a)
+        {
+            if (this.Flags.GetFlag(Register.Flags.PF)) _assembler.JumpOnLabel((string)a);
+        }
+
+        /** JNP **/
+        public void JNP(object a)
+        {
+            if (!this.Flags.GetFlag(Register.Flags.PF)) _assembler.JumpOnLabel((string)a);
+        }
+
+        /** JS **/
+        public void JS(object a)
+        {
+            if (this.Flags.GetFlag(Register.Flags.SF)) _assembler.JumpOnLabel((string)a);
+        }
+
+        /** JNS **/
+        public void JNS(object a)
+        {
+            if (!this.Flags.GetFlag(Register.Flags.SF)) _assembler.JumpOnLabel((string)a);
+        }
+
+        /** JO **/
+        public void JO(object a)
+        {
+            if (this.Flags.GetFlag(Register.Flags.OF)) _assembler.JumpOnLabel((string)a);
+        }
+
+        /** JNO **/
+        public void JNO(object a)
+        {
+            if (!this.Flags.GetFlag(Register.Flags.OF)) _assembler.JumpOnLabel((string)a);
+        }
+
+        /** JA **/
+        public void JA(object a)
+        {
+            if (!this.Flags.GetFlag(Register.Flags.CF) && !this.Flags.GetFlag(Register.Flags.ZF))
+                _assembler.JumpOnLabel((string)a);
+        }
+
+        /** JNA **/
+        public void JNA(object a)
+        {
+            if (this.Flags.GetFlag(Register.Flags.CF) && this.Flags.GetFlag(Register.Flags.ZF))
+                _assembler.JumpOnLabel((string)a);
+        }
+
+        /** JG **/
+        public void JG(object a)
+        {
+            if (!this.Flags.GetFlag(Register.Flags.ZF) &&
+                this.Flags.GetFlag(Register.Flags.SF) == this.Flags.GetFlag(Register.Flags.OF))
+                _assembler.JumpOnLabel((string)a);
+        }
+
+        /** JGE **/
+        public void JGE(object a)
+        {
+            if (this.Flags.GetFlag(Register.Flags.SF) == this.Flags.GetFlag(Register.Flags.OF))
+                _assembler.JumpOnLabel((string)a);
+        }
+
+        /** JL **/
+        public void JL(object a)
+        {
+            if (this.Flags.GetFlag(Register.Flags.SF) != this.Flags.GetFlag(Register.Flags.OF))
+                _assembler.JumpOnLabel((string)a);
+        }
+
+        /** JLE **/
+        public void JLE(object a)
+        {
+            if (this.Flags.GetFlag(Register.Flags.ZF) &&
+                this.Flags.GetFlag(Register.Flags.SF) != this.Flags.GetFlag(Register.Flags.OF))
+                _assembler.JumpOnLabel((string)a);
+        }
+
+        /** JCXZ **/
+        public void JCXZ(object a)
+        {
+            if (this.CX.Decimal == 0)
+                _assembler.JumpOnLabel((string)a);
         }
 
         /** JMP **/ //*****************************************
-        public void Jmp(Register delim, Register delit)
+        public void Jmp(object a)
         {
-            
+            _assembler.JumpOnLabel((string)a);
         }
 
         /** LAHF **/
@@ -371,157 +422,94 @@ namespace Emulator
         }
 
         /** LOOP **/ //*****************************************(после RET)
-        public void Loop()
+        public void Loop(object a)
         {
-
+            CX.Decimal--;
+            if (CX.Decimal != 0)
+                _assembler.JumpOnLabel((string)a);
         }
 
         /** LOOPNZ **/ //*****************************************(после RET)
-        public void Loopnz()
+        public void Loopnz(object a)
         {
-
+            CX.Decimal--;
+            if (CX.Decimal != 0 && !this.Flags.GetFlag(Register.Flags.ZF))
+                _assembler.JumpOnLabel((string)a);
         }
 
         /** LOOPZ **/ //*****************************************(после RET)
-        public void Loopz()
+        public void Loopz(object a)
         {
-
+            CX.Decimal--;
+            if (CX.Decimal != 0 && this.Flags.GetFlag(Register.Flags.ZF))
+                _assembler.JumpOnLabel((string)a);
         }
 
-        /** MOVSX **/ //????????????????????????????
-        public void Movsx(Register dest, Register src)
-        {
-            for (int i = 0; i < dest.Value.Number.Length / 2; i++) dest.Value.Number[i] = src.Value.Number[0];
-            for (int i = dest.Value.Number.Length/2; i < dest.Value.Number.Length; i++) dest.Value.Number[i] = src.Value.Number[i];
-            dest.UpdateFlags(this.Flags);
+        public void Movsb()
+        {   
         }
 
-
-        /** MOVZX **/ //????????????????????????????
-        public void Movzx(Register dest, Register src)
+        public void Movsw()
         {
-            for (int i = 0; i < dest.Value.Number.Length / 2; i++) dest.Value.Number[i] = false;
-            for (int i = dest.Value.Number.Length / 2; i < dest.Value.Number.Length; i++) dest.Value.Number[i] = src.Value.Number[i];
-            dest.UpdateFlags(this.Flags);
         }
 
         /** MUL **/
-        public void Mul(Register mn, bool half = false, bool high = false) 
+        public void Mul(object a, RT at)
         {
-            int m = 0;
-            // если half = false, то слово (DX:AX)
-            if (!half)
+            int m = GetValueFromObject(a, at);
+            if (m > 255) // (DX:AX)
             {
-                DX.SetZero();
-                m = mn.Value.Decimal;
-                int p = m * AX.Value.Decimal;
-                for (int i = 31; i >= 0; i--)
+                int ax = AX.Decimal;
+                AX.SetZero(); DX.SetZero();
+                bool[] bin = BinaryNumber.GetBinary32(m * ax);
+                for (int i = 0; i < AX.Value.Number.Length; i++)
                 {
-                    if (i > 15)
-                    {
-                        AX.Value.Number[i - 16] = p % 2 == 1;
-                        p /= 2;
-                    }
-                    else
-                    {
-                        DX.Value.Number[i] = p % 2 == 1;
-                        p /= 2;
-                    }
-                }    
-                AX.UpdateFlags(this.Flags);
-                if (DX.Value.Decimal == 0) this.Flags.SetFlag(false, Register.Flags.OF, Register.Flags.CF);
-            }
-            // иначе байт(AX)
-            else
-            {
-                if (high) m = BinaryNumber.GetDecimal(mn.GetHigh(), 2);
-                else m = BinaryNumber.GetDecimal(mn.GetLow(), 2);
-                AX.Value.Decimal = m * BinaryNumber.GetDecimal(AX.GetLow(), 2);
-                AX.UpdateFlags(this.Flags);
-                if (DX.Value.Decimal == 0) this.Flags.SetFlag(true, Register.Flags.OF, Register.Flags.CF);
-            }
-        }
-
-        // Для чисел
-        public void Mul(string n, int b)
-        {
-            int m = BinaryNumber.GetDecimal(n, b);
-            // если число превышает 255, то слово (DX:AX)
-            if (m > (Math.Pow(2, 8) - 1))
-            {
-                DX.SetZero();
-                int p = m * AX.Value.Decimal;
-                for (int i = 31; i >= 0; i--)
-                {
-                    if (i > 15)
-                    {
-                        AX.Value.Number[i - 16] = p % 2 == 1;
-                        p /= 2;
-                    }
-                    else
-                    {
-                        DX.Value.Number[i] = p % 2 == 1;
-                        p /= 2;
-                    }
+                    DX.Set(i, bin[i]);
+                    AX.Set(i, bin[i + 16]);
                 }
                 AX.UpdateFlags(this.Flags);
                 if (DX.Value.Decimal == 0) this.Flags.SetFlag(false, Register.Flags.OF, Register.Flags.CF);
             }
-            // иначе байт(AX)
-            else
+            else 
             {
-                AX.Value.Decimal = m * BinaryNumber.GetDecimal(AX.GetLow(), 2);
+                AX.Decimal = AX.LowDecimal * m;
                 AX.UpdateFlags(this.Flags);
-                if (DX.Value.Decimal == 0) this.Flags.SetFlag(true, Register.Flags.OF, Register.Flags.CF);
             }
         }
           
-        /** NEG **/ // флаги
-        public void Neg(Register a)
+        /** NEG **/
+        public void Neg(Register a, RT at)
         {
-            for (int i = 0; i < a.Value.Number.Length; i++) a.Value.Number[i] = !a.Value.Number[i];
-            a.Value.Decimal += 1;
+            int d = GetRegisterValue(a, at);
+            bool[] bin = BinaryNumber.GetBinary(d);
+            for (int i = 0; i < bin.Length; i++) bin[i] = !bin[i];
+            SetRegisterValue(a, at, BinaryNumber.GetDecimal(bin) + 1);
             a.UpdateFlags(this.Flags);
-            if (a.Value.Decimal == 0) this.Flags.SetFlag(false, Register.Flags.CF);
-            this.Flags.SetFlag(true, Register.Flags.CF);
         }
 
-        /** NOP **/ //*****************************************
+        /** NOP **/
+        //*****************************************
         public void Nop()
         {
-
         }
 
         /** NOT **/
-        public void Not(Register a)
+        public void Not(Register a, RT at)
         {
-            for (int i = 0; i < a.Value.Number.Length; i++) a.Value.Number[i] = !a.Value.Number[i];
+            bool[] bin = BinaryNumber.GetBinary(GetRegisterValue(a, at));
+            for (int i = 0; i < bin.Length; i++) bin[i] = !bin[i];
+            SetRegisterValue(a, at, BinaryNumber.GetDecimal(bin));
+            //a.UpdateFlags(this.Flags);
         }
 
         /** OR **/
-        public void Or(Register dest, Register src)
+        public void Or(Register a, object b, RT at, RT bt)
         {
-            for (int i = 0; i < dest.Value.Number.Length; i++)
-            {
-                if (dest.Value.Number[i] == true || src.Value.Number[i] == true) dest.Value.Number[i] = true;
-                else dest.Value.Number[i] = false;
-            }
-            dest.UpdateFlags(this.Flags);
-            this.Flags.SetFlag(false, Register.Flags.OF, Register.Flags.CF);
-                
-        }
-
-        public void Or(Register dest, string n, int b)
-        {
-            bool[] c = BinaryNumber.GetBinary(BinaryNumber.GetDecimal(n, b));
-            for (int i = 0; i < dest.Value.Number.Length; i++)
-            {
-                if (dest.Value.Number[i] == true || c[i] == true) dest.Value.Number[i] = true;
-                else dest.Value.Number[i] = false;
-            }
-            dest.UpdateFlags(this.Flags);
-            this.Flags.SetFlag(false, Register.Flags.OF, Register.Flags.CF);
-
+            bool[] bin1 = BinaryNumber.GetBinary(GetRegisterValue(a, at));
+            bool[] bin2 = BinaryNumber.GetBinary(GetValueFromObject(b, bt));
+            for (var i = 0; i < bin1.Length; i++) bin1[i] |= bin2[i];
+            SetRegisterValue(a, at, BinaryNumber.GetDecimal(bin1));
+            a.UpdateFlags(this.Flags);
         }
 
         /** RCL **/ 
@@ -603,7 +591,7 @@ namespace Emulator
          }
 
          /** SAHF **/ 
-         public void Shahf()
+         public void Sahf()
          {
              for (int i = 0; i < AX.Value.Number.Length / 2; i++)
              {
@@ -612,126 +600,49 @@ namespace Emulator
          }
 
          /** SAL **/
-         public void Sal(Register a, int n)
+         public void Sal(Register a, int n, RT at)
          {
-             bool c = false;
-             bool z = a.Value.Number[0];
-             int m = a.Value.Number.Length;
-             for (int j = 0; j < n; j++)
-             {        
-                 for (int i = 1; i < m; i++)
-                 {
-                     c = a.Value.Number[0];
-                     a.Value.Number[i - 1] = a.Value.Number[i];
-                 } 
-             }
-             a.Value.Number[m - 1] = false;
+             bool[] bin = BinaryNumber.GetBinaryA(GetRegisterValue(a, at), at);
+             bool c = bin[0];
+             for (int i = 0; i < bin.Length - 1; i++) bin[i] = bin[i + 1];
+             bin[bin.Length - 1] = false;
+             SetRegisterValue(a, at, bin);
              a.UpdateFlags(this.Flags);
              this.Flags.SetFlag(c, Register.Flags.CF);
-             this.Flags.SetFlag((a.Value.Number[0] != z), Register.Flags.OF);
+             this.Flags.SetFlag((c == bin[0]), Register.Flags.OF);
          }
 
          /** SAR **/
-         public void Sar(Register a, int n)
+         public void Sar(Register a, int n, RT at)
          {
-             int m = a.Value.Number.Length;
-             bool b = a.Value.Number[0];
-             bool c = false;
-             for (int j = 0; j < n; j++)
-             {
-                 for (int i = (m - 2); i >= 0; i--) 
-                 {
-                     c = a.Value.Number[m - 1];
-                     a.Value.Number[i + 1] = a.Value.Number[i];
-                 }
-                 a.Value.Number[0] = b;
-             }        
+             bool[] bin = BinaryNumber.GetBinaryA(GetRegisterValue(a, at), at);
+             bool s = bin[0]; bool c = bin[bin.Length - 1];
+             for (int i = bin.Length - 1; i > 0; i--) bin[i] = bin[i - 1];
+             bin[0] = s; bin[bin.Length - 1] = false;
+             SetRegisterValue(a, at, bin);
              a.UpdateFlags(this.Flags);
              this.Flags.SetFlag(c, Register.Flags.CF);
-             if (n == 1) this.Flags.SetFlag(false, Register.Flags.OF);
+             this.Flags.SetFlag((s == bin[0]), Register.Flags.OF);
          }
 
          /** SBB **/
-         public void Sbb(Register dest, Register src)
+         public void Sbb(Register a, object b, RT at, RT bt)
          {
-             dest.Value.Decimal = dest.Value.Decimal - src.Value.Decimal - ((this.Flags.GetFlag(Register.Flags.CF)) ? 1 : 0);
-             dest.UpdateFlags(this.Flags);
-         }
-
-         public void Sbb(Register dest, string n, int b)
-         {
-             bool[] c = BinaryNumber.GetBinary(BinaryNumber.GetDecimal(n, b)); 
-             dest.Value.Decimal = dest.Value.Decimal - BinaryNumber.GetDecimal(c) - ((this.Flags.GetFlag(Register.Flags.CF)) ? 1 : 0);
-             dest.UpdateFlags(this.Flags);
-         }
-
-         /** SHL **/
-         public void Shl(Register a, int n)
-         {
-             Sal(a, n);
-         }
-
-         /** SHLD **/
-         public void Shld(Register dest, Register src, int n)
-         {
-             int m = dest.Value.Number.Length;
-             {
-                 bool c = false;
-                 bool z = dest.Value.Number[0];
-                 for (int j = 0; j < n; j++)
-                 {
-                     for (int i = 1; i < m; i++)
-                     {
-                         c = dest.Value.Number[0];
-                         dest.Value.Number[i - 1] = dest.Value.Number[i];
-                     }
-                     dest.Value.Number[m - 1] = src.Value.Number[m - j - 1];
-                 }
-                 dest.UpdateFlags(this.Flags);
-                 this.Flags.SetFlag(c, Register.Flags.CF);
-                 this.Flags.SetFlag((dest.Value.Number[0] != z && n == 1), Register.Flags.OF);
-             }
+             SetRegisterValue(a, at, GetValueFromObject(b, bt) + (this.Flags.GetFlag(Register.Flags.CF) ? 1 : 0));
+             a.UpdateFlags(this.Flags);
          }
 
          /** SHR **/
-         public void Shr(Register a, int n)
+         public void Shr(Register a, int b, RT at)
          {
-             int m = a.Value.Number.Length;
-             bool c = false;
-             for (int j = 0; j < n; j++)
-             {
-                 for (int i = (m - 2); i >= 0; i--)
-                 {
-                     c = a.Value.Number[0];
-                     a.Value.Number[i + 1] = a.Value.Number[i];
-                 } 
-                 a.Value.Number[0] = false;
-             }   
+             bool[] bin = BinaryNumber.GetBinaryA(GetRegisterValue(a, at), at);
+             bool c = bin[bin.Length - 1];
+             for (int i = bin.Length - 1; i > 0; i--) bin[i] = bin[i - 1];
+             bin[0] = false;
+             SetRegisterValue(a, at, bin);
              a.UpdateFlags(this.Flags);
              this.Flags.SetFlag(c, Register.Flags.CF);
-             if (n > 1) this.Flags.SetFlag(false, Register.Flags.OF);
-         }
-
-         /** SHRD **/
-         public void Shrd(Register dest, Register src, int n)
-         {
-             int m = dest.Value.Number.Length;
-             {
-                 bool c = false;
-                 bool z = dest.Value.Number[0];
-                 for (int j = 0; j < n; j++)
-                 {
-                     for (int i = (m - 2); i >= 0; i--)
-                     {
-                         c = dest.Value.Number[m - 1];
-                         dest.Value.Number[i + 1] = dest.Value.Number[i];
-                     }
-                     dest.Value.Number[0] = src.Value.Number[m - j - 1];
-                 }
-                 dest.UpdateFlags(this.Flags);
-                 this.Flags.SetFlag(c, Register.Flags.CF);
-                 this.Flags.SetFlag((dest.Value.Number[0] != z), Register.Flags.OF);
-             }
+             this.Flags.SetFlag(!c, Register.Flags.OF);
          }
 
          /** STC **/
@@ -753,93 +664,90 @@ namespace Emulator
          }
 
          /** SUB **/
-         public void Sub(Register a, Register b)
+         public void Sub(Register a, object b, RT at, RT bt)
          {
-             a.Value.Decimal -= b.Value.Decimal;
-             a.UpdateFlags(this.Flags);
-         }
-
-         public void Sub(Register a, string n, int b)
-         {
-             bool[] c = BinaryNumber.GetBinary(BinaryNumber.GetDecimal(n, b));
-             a.Value.Decimal -= BinaryNumber.GetDecimal(c);
+             SetRegisterValue(a, at, GetRegisterValue(a, at) - GetValueFromObject(b, bt));
              a.UpdateFlags(this.Flags);
          }
 
          /** TEST **/
-         public void Test(Register dest, Register src)
+         public void Test(object a, object b, RT at, RT bt)
          {
-             for (int i = 0; i < dest.Value.Number.Length; i++)
+             bool[] bin1 = BinaryNumber.GetBinary(GetValueFromObject(a, at));
+             bool[] bin2 = BinaryNumber.GetBinary(GetValueFromObject(b, bt));
+             for (int i = 0; i < bin1.Length; i++)
              {
-                 if (dest.Value.Number[i] == true & src.Value.Number[i] == true) dest.Value.Number[i] = true;
-                 else dest.Value.Number[i] = false;
+                 _privateRegister.Value.Number[i] = bin1[i] && bin2[i];
              }
-             dest.UpdateFlags(this.Flags);
-             this.Flags.SetFlag(false, Register.Flags.OF, Register.Flags.CF);
-
-         }
-
-         public void Test(Register dest, string n, int b)
-         {
-             bool[] c = BinaryNumber.GetBinary(BinaryNumber.GetDecimal(n, b));
-             for (int i = 0; i < dest.Value.Number.Length; i++)
-             {
-                 if (dest.Value.Number[i] == true & c[i] == true) dest.Value.Number[i] = true;
-                 else dest.Value.Number[i] = false;
-             }
-             dest.UpdateFlags(this.Flags);
-             this.Flags.SetFlag(false, Register.Flags.OF, Register.Flags.CF);
-
+             _privateRegister.UpdateFlags(this.Flags);
+             this.Flags.SetFlag(false, Register.Flags.CF, Register.Flags.OF);
          }
 
          /** XCHG **/
-         public void Xchg(Register a, Register b)
+         public void Xchg(Register a, Register b, RT at, RT bt)
          {
-             bool[] c = new bool[16];
-             for (int i = (a.Value.Number.Length - 1); i >= 0; i--)
-             {
-                 c[i] = a.Value.Number[i];
-                 a.Value.Number[i] = b.Value.Number[i];
-                 b.Value.Number[i] = c[i];
-             }
+             int val = GetRegisterValue(b, bt);
+             SetRegisterValue(b, bt, GetRegisterValue(a, at));
+             SetRegisterValue(a, at, val);
          }
 
          /** XOR **/
-         public void Xor(Register dest, Register src)
+         public void Xor(Register a, object b, RT at, RT bt)
          {
-             for (int i = 0; i < dest.Value.Number.Length; i++)
-             {
-                 if (dest.Value.Number[i] == src.Value.Number[i]) dest.Value.Number[i] = true;
-                 else dest.Value.Number[i] = false;
-             }
-             dest.UpdateFlags(this.Flags);
-             this.Flags.SetFlag(false, Register.Flags.OF, Register.Flags.CF);
+             bool[] bin1 = BinaryNumber.GetBinary(GetRegisterValue(a, at));
+             bool[] bin2 = BinaryNumber.GetBinary(GetValueFromObject(b, bt));
+             for (var i = 0; i < bin1.Length; i++) bin1[i] ^= bin2[i];
+             SetRegisterValue(a, at, BinaryNumber.GetDecimal(bin1));
+             a.UpdateFlags(this.Flags);
          }
 
-         public void Xor(Register dest, string n, int b)
-         {
-             bool[] c = BinaryNumber.GetBinary(BinaryNumber.GetDecimal(n, b));
-             for (int i = 0; i < dest.Value.Number.Length; i++)
-             {
-                 if (dest.Value.Number[i] == c[i]) dest.Value.Number[i] = true;
-                 else dest.Value.Number[i] = false;
-             }
-             dest.UpdateFlags(this.Flags);
-             this.Flags.SetFlag(false, Register.Flags.OF, Register.Flags.CF);
-
-         }
          //-----------------------------------------------------
 
          /** MOV **/
-         public void Mov(Register a, Register b)
+         public void Mov(Register a, object val, RT at, RT bt)
+         {
+             SetRegisterValue(a, at, GetValueFromObject(val, bt));
+         }
+
+        //---------------------------------------------------------
+        // Извлекает значение из объекта
+        public int GetValueFromObject(object obj, RT type = RT.None)
         {
-            a.Value.Decimal = b.Value.Decimal;
+            if(obj is Register)
+            {
+                Register a = (Register)obj;
+                if(type == RT.None) return a.Decimal;
+                else return (type == RT.High ? a.HighDecimal : a.LowDecimal);
+            }
+            return (int)obj;
         }
 
-        public void Mov(Register a, string d, int b)
+        //---------------------------------------------------------
+        // Устанавливает значение в регистр
+        public void SetRegisterValue(Register a, Register.Types type, int n)
         {
-            a.Value.Decimal = BinaryNumber.GetDecimal(d, b);
+            if (type == Register.Types.None) a.Decimal = n;
+            else if (type == Register.Types.High) a.HighDecimal = n;
+            else if (type == Register.Types.Low) a.LowDecimal = n;
         }
+
+        public void SetRegisterValue(Register a, Register.Types type, bool[] bin)
+        {
+            SetRegisterValue(a, type, BinaryNumber.GetDecimal(bin));
+        }
+
+        // Возвращает значение из регистра
+        public int GetRegisterValue(Register a, Register.Types type = RT.None)
+        {
+            return (type == Register.Types.None ? a.Decimal : (type == Register.Types.High ? a.HighDecimal : a.LowDecimal));
+        }
+
+        // Возвращает длину
+        public int GetBinLength(RT type)
+        {
+            return type == RT.None ? 16 : 8;
+        }
+
 
         public bool IsFlag(Register.Flags f)
         {

@@ -5,9 +5,17 @@ using System.Text;
 namespace Emulator
 {
     // Класс Регистр
-    class Register
+    public class Register
     {
         public BinaryNumber Value;
+
+        // Тип регистра
+        public enum Types
+        {
+            None,
+            Low,
+            High
+        };
 
         // Флаги
         public enum Flags
@@ -27,6 +35,20 @@ namespace Emulator
         public Register()
         {
             Value = new BinaryNumber(0);
+        }
+
+
+        // Десятичное значение
+        public int Decimal
+        {
+            set
+            {
+                this.Value.Decimal = value;
+            }
+            get
+            {
+                return this.Value.Decimal;
+            }
         }
 
         // Десятичный верхний
@@ -58,6 +80,30 @@ namespace Emulator
                 double d = 0;
                 for (int i = 8; i < 16; i++) d += (this.Value.Number[i] ? 1 : 0) * Math.Pow(2, 15 - i);
                 return Convert.ToInt32(d);
+            }
+        }
+
+        public string HighHex
+        {
+            get
+            {
+                return BinaryNumber.GetHex(HighDecimal, 2);
+            }
+        }
+
+        public string LowHex
+        {
+            get
+            {
+                return BinaryNumber.GetHex(LowDecimal, 2);
+            }
+        }
+
+        public string Hex
+        {
+            get
+            {
+                return BinaryNumber.GetHex(Decimal, 4);
             }
         }
 
@@ -122,11 +168,6 @@ namespace Emulator
         {
             for (int i = 0; i < f.Length; i++) Set((int)f[i], state);
         }
-        /*
-        public void SetFlag(bool state, params int[] f)
-        {
-            for (int i = 0; i < f.Length; i++) Set(f[i], state);
-        }*/
 
         // Выставляет флаги
         public void UpdateFlags(Register flags)
@@ -145,7 +186,14 @@ namespace Emulator
             flags.SetFlag(Flags.OF, Value.OverflowFlag);
             flags.SetFlag(Flags.ZF, Value.Decimal == 0);
             flags.SetFlag(Flags.SF, Value.Number[0]);
-            flags.SetFlag(Flags.PF, Value.Decimal % 2 == 0);
+
+            // PF
+            int pf_count = 0;
+            for (int i = 8; i < 16; i++)
+                if (Value.Number[i]) pf_count++;
+            flags.SetFlag(pf_count % 2 == 0, Flags.PF);
+
+
             //flags.SetFlag(Flags.AF, ...);
         }
     }

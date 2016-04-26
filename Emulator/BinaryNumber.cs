@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Emulator
 {
-    class BinaryNumber
+    public class BinaryNumber
     {
         public const int MaxUnsignedDecimal = 65535;
 
@@ -292,9 +292,11 @@ namespace Emulator
             List<bool> bin = new List<bool>();
             while (dec > 0)
             {
-                bin.Insert(bin.Count, dec % 2 == 1);
+                bin.Add(dec % 2 == 1);
+                //bin.Insert(bin.Count, dec % 2 == 1);
                 dec /= 2;
             }
+            while (bin.Count < 32) bin.Add(false);
             bin.Reverse();
             return bin.ToArray();
         }
@@ -320,6 +322,26 @@ namespace Emulator
             bool[] bin = GetBinary(dec);
             if (dec < 0) bin[0] = true;
             return bin;
+		}
+		
+        /// <summary>
+        /// Возвращает биты в виде массива. (Массив может быть любой длины)
+        /// </summary>
+        /// <param name="dec"></param>
+        /// <returns></returns>
+        public static bool[] GetBinaryA(int dec, Register.Types type)
+        {
+            List<bool> bin = new List<bool>();
+            int n = dec > BinaryNumber.MaxUnsignedDecimal ? 0 : dec;
+            while (n > 0)
+            {
+                bin.Add((n % 2) == 1);
+                n /= 2;
+            }
+            bin.Reverse();
+            int minLen = (type == Register.Types.None) ? 16 : 8;
+            while (bin.Count < minLen) bin.Insert(0, false);
+            return bin.ToArray();
         }
 
         // Перевод числа в десятичное
@@ -379,5 +401,31 @@ namespace Emulator
             return dec;
         }
 
+        /// <summary>
+        /// Преобразует десятичное число в шестнадцатеричное
+        /// </summary>
+        /// <param name="dec">Десятичное число</param>
+        /// <param name="digits">Количество цифр (при 0 количество цифр не фиксируется)</param>
+        /// <returns></returns>
+        public static string GetHex(int dec, int digits = 0)
+        {
+            const string table = "ABCDEF";
+            List<string> hex = new List<string>();
+            while (dec > 0)
+            {
+                int a = dec % 16;
+                dec /= 16;
+                hex.Add((a < 10 ? a.ToString() : table.Substring(a - 10, 1)));
+            }
+            if (dec != 0) hex.Add(dec < 10 ? dec.ToString() : table.Substring(dec - 10, 1));
+            if (hex.Count == 0) hex.Add("0");
+            hex.Reverse();
+            if(digits != 0 && hex.Count != digits)
+            {
+                if(hex.Count > digits) hex.RemoveRange(0, hex.Count - digits);
+                while (hex.Count < digits) hex.Insert(0, "0");
+            }
+            return String.Join("", hex.ToArray());
+        }
     }
 }
