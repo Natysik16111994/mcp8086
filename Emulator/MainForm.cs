@@ -231,5 +231,10 @@ namespace Emulator
             outputForm.richTextBox1.SelectionStart = outputForm.richTextBox1.Text.Length;
             outputForm.richTextBox1.Focus();
         }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

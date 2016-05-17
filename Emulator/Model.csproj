@@ -61,7 +61,6 @@
     <Compile Include="RegistersForm.Designer.cs">
       <DependentUpon>RegistersForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Number.cs" />
     <Compile Include="OutputForm.cs">
       <SubType>Form</SubType>
     </Compile>

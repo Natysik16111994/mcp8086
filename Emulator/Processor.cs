@@ -13,6 +13,7 @@ namespace Emulator
         private Assembler _assembler;
         private Register _privateRegister;
 
+        // Конструктор
         public Processor()
         {
             AX = new Register();
@@ -52,7 +53,7 @@ namespace Emulator
         public Register GetRegisterByName(string name)
         {
             if (name.Length != 2) return null;
-            name = name.ToLower();
+            name = name.ToLower(); // переводит в нижний регистр
             if (name.Substring(1, 1) == "l" || name.Substring(1, 1) == "h") name = name.Substring(0, 1) + "x";
             if (name == "ax") return this.AX;
             else if (name == "bx") return this.BX;
