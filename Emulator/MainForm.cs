@@ -34,6 +34,7 @@ namespace Emulator
             outputForm = new OutputForm();
 
             MainForm.Instance = this;
+            UpdateTitle();
         }
 
         // Кнопки в меню
@@ -52,6 +53,7 @@ namespace Emulator
                 {
                     this._filename = openFileDialog1.FileName;
                     programForm.richTextBox1.Lines = File.ReadAllLines(this._filename);
+                    programForm.StopProgram();
                 }
             }
             UpdateTitle();

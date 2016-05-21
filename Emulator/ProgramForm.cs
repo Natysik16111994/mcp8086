@@ -62,7 +62,7 @@ jnz start
             richTextBox1.ReadOnly = true;
             MainForm.Instance.Update();
 
-            LoadAsmFromRichText();
+            LoadAsmFromRichText(false);
             _processor.ResetRegisters();
             this.backgroundWorker1.RunWorkerAsync();
             MainForm.Instance.WriteConsole("Начато выполнение программы.");
@@ -83,11 +83,17 @@ jnz start
                 MainForm.Instance.toolStripButton_Execute.Enabled = MainForm.Instance.выполнитьПрограммуToolStripMenuItem.Enabled = false;
                 this.UpdateView();
                 MainForm.Instance.WriteConsole("Начато пошаговое выполнение программы.");
+                _processor.Flags.SetFlag(true, Register.Flags.TF);
+                this.UpdateView(true);
             }
             else
             {
                 asm.ExecuteInstruction();
                 this.UpdateView(true);
+                if (asm.ProgramEnd)
+                {
+                    MainForm.Instance.WriteConsole("Завершено пошаговое выполнение.");
+                }
             }
         }
 
@@ -104,6 +110,7 @@ jnz start
         /// Обновляет вид
         /// </summary>
         /// <param name="showChanges">Флаг, указывает подсвечивать ли изменяемые значения</param>
+        /// <param name="currentLine">Индекс подсвечиваемой строки</param>
         private void UpdateView(bool showChanges = false)
         {
             int line = asm.GetCurrentLine();
@@ -123,7 +130,6 @@ jnz start
                 richTextBox1.ReadOnly = MainForm.Instance.toolStripButton_Stop.Enabled =
                     MainForm.Instance.остановитьПрограммуToolStripMenuItem.Enabled = false;
                 MainForm.Instance.toolStripButton_Execute.Enabled = MainForm.Instance.выполнитьПрограммуToolStripMenuItem.Enabled = true;
-                MainForm.Instance.WriteConsole("Завершено пошаговое выполнение.");
             }
             this.Update();
             MainForm.Instance.registersForm.UpdateView(showChanges);
@@ -156,9 +162,9 @@ jnz start
             {
                 while (!asm.ProgramEnd)
                 {
-                    asm.ExecuteInstruction();
                     progress += (progress == 0 ? 1 : -1);
                     worker.ReportProgress(progress);
+                    asm.ExecuteInstruction();
                     Thread.Sleep(1);
                 }
             }
@@ -176,6 +182,7 @@ jnz start
             MainForm.Instance.остановитьПрограммуToolStripMenuItem.Enabled = MainForm.Instance.toolStripButton_Stop.Enabled = false;
             richTextBox1.ReadOnly = false;
             MainForm.Instance.WriteConsole("Выполнение программы завершено.");
+            this.UpdateView();
         }
     }
 }

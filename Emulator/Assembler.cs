@@ -37,6 +37,9 @@ namespace Emulator
             this.processor = proc;
         }
 
+        /// <summary>
+        /// Получает или задает, остановлена программа или нет
+        /// </summary>
         public bool ProgramEnd
         {
             get
@@ -49,6 +52,9 @@ namespace Emulator
             }
         }
 
+        /// <summary>
+        /// Получает, готова программа или нет
+        /// </summary>
         public bool ProgramReady
         {
             get
@@ -57,6 +63,9 @@ namespace Emulator
             }
         }
 
+        /// <summary>
+        /// Указывает, выполняется программа или нет
+        /// </summary>
         public bool ProgramExecuting
         {
             get
@@ -65,6 +74,10 @@ namespace Emulator
             }
         }
 
+        /// <summary>
+        /// Получает номер строки, выполняющейся в данный момент
+        /// </summary>
+        /// <returns>Номер строки</returns>
         public int GetCurrentLine()
         {
             if (ProgramExecuting) return instructions[currentInstructionIndex].line;
@@ -225,6 +238,9 @@ namespace Emulator
                 return false;
             }
 
+            // Увеличение флага IP
+            processor.IP.Decimal += 1;
+
             Register ra = null;
             if (value_a is Register) ra = (Register)value_a;
             
@@ -322,6 +338,10 @@ namespace Emulator
 
                 case "inc":
                     processor.Inc(ra, inst.regtype1);
+                    break;
+
+                case "int":
+                    processor.Int(value_a);
                     break;
 
                 case "je": case "jz":
@@ -440,6 +460,30 @@ namespace Emulator
 
                 case "or":
                     processor.Or(ra, value_b, inst.regtype1, inst.regtype2);
+                    break;
+
+                case "pop":
+                    processor.Pop(ra);
+                    break;
+
+                case "popa": case "popad":
+                    processor.Popa();
+                    break;
+
+                case "popf": case "popfd":
+                    processor.Popf();
+                    break;
+
+                case "push":
+                    processor.Push(value_a, inst.regtype1);
+                    break;
+
+                case "pusha": case "pushad":
+                    processor.Pusha(value_a, inst.regtype1);
+                    break;
+
+                case "pushf": case "pushfd":
+                    processor.Pushf(value_a, inst.regtype1);
                     break;
 
                 case "rcl":

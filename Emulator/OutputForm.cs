@@ -23,5 +23,20 @@ namespace Emulator
                 this.Visible = MainForm.Instance.окноВыводаToolStripMenuItem.Checked = false;
             }
         }
+
+        public void ShotInputField()
+        {
+            this.textBox1.Text = "";
+            this.textBox1.Visible = true;
+            this.richTextBox1.Height -= (this.textBox1.Height + 5);
+            this.Focus();
+            this.textBox1.Focus();
+        }
+
+        public void HideInputField()
+        {
+            this.textBox1.Visible = false;
+            this.richTextBox1.Height += (this.textBox1.Height + 5);
+        }
     }
 }

@@ -284,6 +284,11 @@ namespace Emulator
             SetRegisterValue(a, at, GetValueFromObject(a, at) + 1);
         }
 
+        /** INT **/
+        public void Int(object a)
+        {
+        }
+
         /** J(COND) **/ //*****************************************
         /** JZ/JE **/
         public void JZ(object a)
@@ -511,6 +516,42 @@ namespace Emulator
             for (var i = 0; i < bin1.Length; i++) bin1[i] |= bin2[i];
             SetRegisterValue(a, at, BinaryNumber.GetDecimal(bin1));
             a.UpdateFlags(this.Flags);
+        }
+
+        /** POP **/
+        public void Pop(Register a)
+        {
+            stack.Pop(a);
+        }
+
+        /** POPA **/
+        public void Popa()
+        {
+            stack.Popa();
+        }
+
+        /** POPF **/
+        public void Popf()
+        {
+            stack.Popf();
+        }
+
+        /** PUSH **/
+        public void Push(object a, RT at)
+        {
+            stack.Push(GetValueFromObject(a, at));
+        }
+
+        /** PUSHA **/
+        public void Pusha(object a, RT at)
+        {
+            stack.Pusha();
+        }
+
+        /** PUSHF **/
+        public void Pushf(object a, RT at)
+        {
+            stack.Pushf();
         }
 
         /** RCL **/ 
