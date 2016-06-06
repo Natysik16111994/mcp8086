@@ -236,7 +236,7 @@ namespace Emulator
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-
+            programForm.richTextBox1.Lines = File.ReadAllLines("factorial.asm");
         }
     }
 }

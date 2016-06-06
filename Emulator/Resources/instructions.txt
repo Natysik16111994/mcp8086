@@ -1,0 +1,100 @@
+; Тип записи
+; ИНСТРУКЦИЯ [ОПЕРАНД1] [ОПЕРАНД2]
+; r - регистр
+; d - число
+; v - значение (регистр или число)
+; l - метка, название подпрограммы
+
+add r v
+adc r v
+and r v
+bsf r v
+bsr r v
+bt r d
+btc r d
+btr r d
+bts r d
+call l
+cbw r
+clc
+cld
+cli
+cmc
+cmp v v
+cwd
+dec r
+div r
+idiv r
+enter
+imul r
+inc r
+int d
+je l
+jz l
+jnz l
+jne l
+jc l
+jnae l
+jb l
+jp l
+jnp l
+js l
+jns l
+jo l
+jno l
+ja l
+jnbe l
+jna l
+jbe l
+jg l
+jnle l
+jge l
+jnl l
+jl l
+jnge l
+jle l
+jng l
+jcxz l
+jmp l
+lahf
+leave
+loop l
+loopnz l
+loopne l
+loopz l
+loppe l
+mov r v
+movsb
+mul v
+neg r
+nop
+not r
+or r v
+pop r
+popa
+popad
+popf
+popfd
+push v
+pusha v
+pushad v
+pushf v
+pushfd v
+ret
+rcl r d
+rcr r d
+rol r d
+ror r d
+sahf
+sal r d
+shl r d
+sar r d
+sbb r v
+shr r d
+stc
+std
+sti
+sub r v
+test v v
+xchg r r
+xor r v

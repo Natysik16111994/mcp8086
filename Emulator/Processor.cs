@@ -593,7 +593,7 @@ namespace Emulator
          /** RET **/ //*****************************************
          public void Ret()
          {
-
+             _assembler.Ret();
          }
 
          /** ROL **/ 

@@ -127,7 +127,6 @@
   <data name="_1454418842_resultset_last" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\1454418842_resultset_last.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="_1461522452_document_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\1461522452_document_16.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -139,5 +138,9 @@
   </data>
   <data name="_1461522691_info_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\1461522691_info_16.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="instructions" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\instructions.txt;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
   </data>
 </root>

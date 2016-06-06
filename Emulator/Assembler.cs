@@ -9,6 +9,7 @@ namespace Emulator
     {
         Register,
         Value,
+        Label,
         Null
     };
 
@@ -19,11 +20,35 @@ namespace Emulator
         public aiOperandType type1, type2;
         public Register.Types regtype1, regtype2;
         public string raw;
+        public int partsCount;
+    }
+
+    public struct AsmProc
+    {
+        public int startInstruction, endInstruction;
+        public string name;
+        public AsmProc(string name, int startInstruction)
+        {
+            this.name = name;
+            this.startInstruction = startInstruction;
+            this.endInstruction = 0;
+        }
+    }
+
+    public struct AsmTrace
+    {
+        public int callFrom, endProc;
+        public AsmTrace(int callFrom, int endproc)
+        {
+            this.callFrom = callFrom;
+            this.endProc = endproc;
+        }
     }
 
     public class Assembler
     {
         private Processor processor;
+        private AsmValidator validator;
 
         // программа
         private List<AsmInstruction> instructions = new List<AsmInstruction>();
@@ -31,10 +56,19 @@ namespace Emulator
         private Dictionary<string, int> labelIndices = new Dictionary<string, int>();
         private int currentInstructionIndex = 0;
 
+        // открытые процедуры
+        private Dictionary<string, AsmProc> openedProc = new Dictionary<string, AsmProc>();
+        private Dictionary<string, AsmProc> closedProc = new Dictionary<string, AsmProc>();
+        private Dictionary<int, int> bodyProc = new Dictionary<int, int>();
+
+        // стек вызовов
+        private Stack<AsmTrace> callStack = new Stack<AsmTrace>();
+
         // Конструктор
         public Assembler(Processor proc)
         {
             this.processor = proc;
+            validator = AsmValidator.GetInstance();
         }
 
         /// <summary>
@@ -59,7 +93,7 @@ namespace Emulator
         {
             get
             {
-                return currentInstructionIndex == 0 && instructions.Count > 0;
+                return instructions.Count > 0 && !ProgramEnd;
             }
         }
 
@@ -111,6 +145,9 @@ namespace Emulator
             // Очищаем старые значения
             currentInstructionIndex = 0;
             instructions.Clear(); labelIndices.Clear();
+            openedProc.Clear(); closedProc.Clear();
+            bodyProc.Clear();
+            callStack.Clear();
 
             string a, b, c;
             for (int i = 0; i < content.Length; i++)
@@ -141,6 +178,40 @@ namespace Emulator
                 if (ParseString(b, out instruction))
                 {
                     instruction.line = i;
+
+                    // проверка на процедуру
+                    if (instruction.partsCount == 2)
+                    {
+                        if (instruction.operand1 == "proc")
+                        {
+                            openedProc.Add(instruction.opcode, new AsmProc(instruction.opcode, instruction.line));
+                            continue;
+                        }
+                        else if (instruction.operand1 == "endp")
+                        {
+                            if (openedProc.ContainsKey(instruction.opcode))
+                            {
+                                AsmProc proc = openedProc[instruction.opcode];
+                                openedProc.Remove(instruction.opcode);
+                                proc.startInstruction = FindNextInstruction(proc.startInstruction);
+                                proc.endInstruction = FindNextInstruction(i - 1);
+                                closedProc.Add(instruction.opcode, proc);
+                                bodyProc.Add(proc.startInstruction, proc.endInstruction);
+                                continue;
+                            }
+                            else
+                            {
+                                MainForm.Instance.WriteConsole(string.Format("Тело процедуры {0} не было открыто, но есть попытка его закрытия.", instruction.opcode));
+                                return false;
+                            }
+                        }
+                    }
+
+                    // валидация процедуры
+                    if (!validator.Validate(instruction))
+                    {
+                        return false;
+                    }
                     instructions.Add(instruction);
                 }
                 else
@@ -148,7 +219,42 @@ namespace Emulator
                     return false;
                 }
             }
+
+            // проверка, что тела процедур закрыты
+            if (openedProc.Count > 0)
+            {
+                foreach (var p in openedProc)
+                {
+                    MainForm.Instance.WriteConsole(string.Format("Тело процедуры {0} было открыто, но не закрыто.", p.Value.name));
+                }
+                return false;
+            }
+
+            // проверка, чтобы тело процедур не выполнялись
+            while (bodyProc.ContainsKey(currentInstructionIndex))
+            {
+                currentInstructionIndex = bodyProc[currentInstructionIndex] + 1;
+            }
+
+            if (instructions.Count == 0) return false;
             return true;
+        }
+
+        /// <summary>
+        /// Возвращает индекс инструкции по номеру строки
+        /// </summary>
+        /// <param name="line"></param>
+        /// <returns></returns>
+        private int FindNextInstruction(int line)
+        {
+            for(int i = 0; i < instructions.Count; i++)
+            {
+                if(instructions[i].line >= line)
+                {
+                    return i;
+                }
+            }
+            return instructions.Count;
         }
 
         // Парсинг строки
@@ -158,7 +264,7 @@ namespace Emulator
             instruct.opcode = instruct.operand1 = instruct.operand2 = "";
             instruct.type1 = instruct.type2 = aiOperandType.Value;
             instruct.regtype1 = instruct.regtype2 = Register.Types.None;
-            instruct.line = 0;
+            instruct.partsCount = instruct.line = 0;
 
             int len = str.IndexOf(" ");
             if (len < 0) len = str.Length;
@@ -199,8 +305,9 @@ namespace Emulator
             instruct.operand1 = operands[0]; instruct.operand2 = operands[1];
             instruct.type1 = GetOperandType(operands[0]);
             instruct.type2 = GetOperandType(operands[1]);
-            if(instruct.type1 == aiOperandType.Register) instruct.regtype1 = GetRegisterType(operands[0]);
-            if(instruct.type2 == aiOperandType.Register) instruct.regtype2 = GetRegisterType(operands[1]);
+            if (instruct.type1 == aiOperandType.Register) instruct.regtype1 = GetRegisterType(operands[0]);
+            if (instruct.type2 == aiOperandType.Register) instruct.regtype2 = GetRegisterType(operands[1]);
+            instruct.partsCount = 1 + (instruct.type1 != aiOperandType.Null ? 1 : 0) + (instruct.type2 != aiOperandType.Null ? 1 : 0);
             return true;
         }
         
@@ -210,7 +317,38 @@ namespace Emulator
             operand = operand.Trim();
             if (operand.Length == 0) return aiOperandType.Null;
             if(processor.GetRegisterByName(operand) != null) return aiOperandType.Register;
+            if (OperandIsLabel(operand)) return aiOperandType.Label;
             return aiOperandType.Value;
+        }
+
+        /// <summary>
+        /// Проверяет, является ли операнд меткой
+        /// </summary>
+        /// <param name="operand"></param>
+        /// <returns></returns>
+        public bool OperandIsLabel(string operand)
+        {
+            if (operand.Length == 0) return false;
+            int test = 0;
+            if (int.TryParse(operand, out test)) return false;
+
+            string a = operand.Substring(operand.Length - 1, 1);
+            if (a == "b")
+            {
+                a = a.Trim(("b01").ToCharArray());
+                if (a.Length == 0) return false;
+            }
+            else if (a == "o")
+            {
+                a = a.Trim(("o01234567").ToCharArray());
+                if(a.Length == 0) return false;
+            }
+            else if (a == "h")
+            {
+                a = a.Trim(("h0123456789abcdef").ToCharArray());
+                if(a.Length == 0) return false;
+            }
+            return true;
         }
 
         // Возвращает тип регистра
@@ -231,6 +369,23 @@ namespace Emulator
             AsmInstruction inst = instructions[currentInstructionIndex];
             currentInstructionIndex++;
 
+            // проверка, выполнилась ли процедура, для возврата обратно
+            if (callStack.Count > 0)
+            {
+                AsmTrace trace = callStack.Peek();
+                if (trace.endProc + 1 == currentInstructionIndex)
+                {
+                    currentInstructionIndex = trace.callFrom;
+                    callStack.Pop();
+                }
+            }
+
+            // проверка, чтобы тело процедур не выполнялись
+            if (bodyProc.ContainsKey(currentInstructionIndex))
+            {
+                currentInstructionIndex = bodyProc[currentInstructionIndex] + 1;
+            }
+
             object value_a = null, value_b = null;
             if(!GetValueOrRegister(inst.operand1, inst.type1, out value_a) ||
                 !GetValueOrRegister(inst.operand2, inst.type2, out value_b))
@@ -243,8 +398,6 @@ namespace Emulator
 
             Register ra = null;
             if (value_a is Register) ra = (Register)value_a;
-            
-            // TODO: проверка опкода
 
             switch (inst.opcode)
             {
@@ -286,6 +439,9 @@ namespace Emulator
 
                 // TODO: call
                 case "call":
+                    AsmProc proc = closedProc[inst.operand1];
+                    callStack.Push(new AsmTrace(currentInstructionIndex, proc.endInstruction));
+                    currentInstructionIndex = proc.startInstruction;
                     break;
 
                 case "cbw":
@@ -309,7 +465,7 @@ namespace Emulator
                     break;
 
                 case "cmp":
-                    processor.Cmp(ra, value_a, inst.regtype1, inst.regtype2);
+                    processor.Cmp(value_a, value_b, inst.regtype1, inst.regtype2);
                     break;
 
                 case "cwd":
@@ -340,6 +496,7 @@ namespace Emulator
                     processor.Inc(ra, inst.regtype1);
                     break;
 
+                // Прерывание
                 case "int":
                     processor.Int(value_a);
                     break;
@@ -486,6 +643,10 @@ namespace Emulator
                     processor.Pushf(value_a, inst.regtype1);
                     break;
 
+                case "ret":
+                    processor.Ret();
+                    break;
+
                 case "rcl":
                     processor.Rcl(ra, (int)value_b);
                     break;
@@ -590,6 +751,11 @@ namespace Emulator
                     return true;
                 }
             }
+            else if (type == aiOperandType.Label)
+            {
+                obj = data;
+                return true;
+            }
             else if (type == aiOperandType.Null) return true;
             return false;
         }
@@ -600,6 +766,18 @@ namespace Emulator
             if (labelIndices.ContainsKey(label))
             {
                 currentInstructionIndex = labelIndices[label];
+            }
+        }
+
+        /// <summary>
+        /// Возвращает управление
+        /// </summary>
+        public void Ret()
+        {
+            if (callStack.Count > 0)
+            {
+                AsmTrace trace = callStack.Pop();
+                currentInstructionIndex = trace.callFrom;
             }
         }
     }

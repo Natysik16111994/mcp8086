@@ -56,16 +56,18 @@ jnz start
         /// </summary>
         public void ExecuteProgram()
         {
-            MainForm.Instance.выполнитьПрограммуToolStripMenuItem.Enabled = MainForm.Instance.toolStripButton_Execute.Enabled =
-            MainForm.Instance.toolStripButton_Step.Enabled = MainForm.Instance.пошаговоеВыполнениеToolStripMenuItem.Enabled = false;
-            MainForm.Instance.остановитьПрограммуToolStripMenuItem.Enabled = MainForm.Instance.toolStripButton_Stop.Enabled = true;
-            richTextBox1.ReadOnly = true;
-            MainForm.Instance.Update();
+            if (LoadAsmFromRichText(false))
+            {
+                MainForm.Instance.выполнитьПрограммуToolStripMenuItem.Enabled = MainForm.Instance.toolStripButton_Execute.Enabled =
+                MainForm.Instance.toolStripButton_Step.Enabled = MainForm.Instance.пошаговоеВыполнениеToolStripMenuItem.Enabled = false;
+                MainForm.Instance.остановитьПрограммуToolStripMenuItem.Enabled = MainForm.Instance.toolStripButton_Stop.Enabled = true;
+                richTextBox1.ReadOnly = true;
+                MainForm.Instance.Update();
 
-            LoadAsmFromRichText(false);
-            _processor.ResetRegisters();
-            this.backgroundWorker1.RunWorkerAsync();
-            MainForm.Instance.WriteConsole("Начато выполнение программы.");
+                _processor.ResetRegisters();
+                this.backgroundWorker1.RunWorkerAsync();
+                MainForm.Instance.WriteConsole("Начато выполнение программы.");
+            }
         }
 
         /// <summary>
@@ -76,15 +78,17 @@ jnz start
             // Если программа не готова, загрузить
             if (!asm.ProgramExecuting)
             {
-                LoadAsmFromRichText(true);
-                _processor.ResetRegisters();
-                richTextBox1.ReadOnly = MainForm.Instance.toolStripButton_Stop.Enabled =
-                    MainForm.Instance.остановитьПрограммуToolStripMenuItem.Enabled = true;
-                MainForm.Instance.toolStripButton_Execute.Enabled = MainForm.Instance.выполнитьПрограммуToolStripMenuItem.Enabled = false;
-                this.UpdateView();
-                MainForm.Instance.WriteConsole("Начато пошаговое выполнение программы.");
-                _processor.Flags.SetFlag(true, Register.Flags.TF);
-                this.UpdateView(true);
+                if (LoadAsmFromRichText(true))
+                {
+                    _processor.ResetRegisters();
+                    richTextBox1.ReadOnly = MainForm.Instance.toolStripButton_Stop.Enabled =
+                        MainForm.Instance.остановитьПрограммуToolStripMenuItem.Enabled = true;
+                    MainForm.Instance.toolStripButton_Execute.Enabled = MainForm.Instance.выполнитьПрограммуToolStripMenuItem.Enabled = false;
+                    this.UpdateView();
+                    MainForm.Instance.WriteConsole("Начато пошаговое выполнение программы.");
+                    _processor.Flags.SetFlag(true, Register.Flags.TF);
+                    this.UpdateView(true);
+                }
             }
             else
             {
@@ -120,10 +124,13 @@ jnz start
             richTextBox1.DeselectAll();
             if (line != -1)
             {
-                richTextBox1.Select(linesInfo[line].start, linesInfo[line].length);
-                richTextBox1.SelectionColor = Color.White;
-                richTextBox1.SelectionBackColor = Color.Brown;
-                richTextBox1.DeselectAll();
+                if (linesInfo.ContainsKey(line))
+                {
+                    richTextBox1.Select(linesInfo[line].start, linesInfo[line].length);
+                    richTextBox1.SelectionColor = Color.White;
+                    richTextBox1.SelectionBackColor = Color.Brown;
+                    richTextBox1.DeselectAll();
+                }
             }
             else
             {
@@ -138,20 +145,24 @@ jnz start
         /// <summary>
         /// Загружает код ассемблера из поля
         /// </summary>
-        private void LoadAsmFromRichText(bool loadLineInfo = false)
+        private bool LoadAsmFromRichText(bool loadLineInfo = false)
         {
-            asm.LoadAsm(richTextBox1.Lines);
-            if (loadLineInfo)
+            if (asm.LoadAsm(richTextBox1.Lines))
             {
-                linesInfo.Clear();
-                int start = 0, length = 0;
-                for (int i = 0; i < richTextBox1.Lines.Length; i++)
+                if (loadLineInfo)
                 {
-                    if (i != 0) start = start + length + 1;
-                    length = richTextBox1.Lines[i].Length;
-                    linesInfo.Add(i, new LineInfo(start, length));
+                    linesInfo.Clear();
+                    int start = 0, length = 0;
+                    for (int i = 0; i < richTextBox1.Lines.Length; i++)
+                    {
+                        if (i != 0) start = start + length + 1;
+                        length = richTextBox1.Lines[i].Length;
+                        linesInfo.Add(i, new LineInfo(start, length));
+                    }
                 }
+                return true;
             }
+            return false;
         }
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)

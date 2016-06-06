@@ -121,6 +121,72 @@ namespace Emulator.Properties {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на ; Тип записи
+        ///; ИНСТРУКЦИЯ [ОПЕРАНД1] [ОПЕРАНД2]
+        ///; r - регистр
+        ///; d - число
+        ///; v - значение (регистр или число)
+        ///; l - метка, название подпрограммы
+        ///
+        ///add r v
+        ///adc r v
+        ///and r v
+        ///bsf r v
+        ///bsr r v
+        ///bt r d
+        ///btc r d
+        ///btr r d
+        ///bts r d
+        ///call l
+        ///cbw r
+        ///clc
+        ///cld
+        ///cli
+        ///cmc
+        ///cmp v v
+        ///cwd
+        ///dec r
+        ///div r
+        ///idiv r
+        ///enter
+        ///imul r
+        ///inc r
+        ///int d
+        ///je l
+        ///jz l
+        ///jnz l
+        ///jne l
+        ///jc l
+        ///jnae l
+        ///jb l
+        ///jp l
+        ///jnp l
+        ///js l
+        ///jns l
+        ///jo l
+        ///jno l
+        ///ja l
+        ///jnbe l
+        ///jna l
+        ///jbe l
+        ///jg l
+        ///jnle l
+        ///jge l
+        ///jnl l
+        ///jl l
+        ///jnge l
+        ///jle l
+        ///jng l
+        ///jcxz l
+        ///jmp [остаток строки не уместился]&quot;;.
+        /// </summary>
+        internal static string instructions {
+            get {
+                return ResourceManager.GetString("instructions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap shape_square_16 {
