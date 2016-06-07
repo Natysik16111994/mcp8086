@@ -32,6 +32,7 @@ namespace Emulator
             _processor = proc;
             asm = _processor.GetAssembler();
             linesInfo = new Dictionary<int, LineInfo>();
+            richTextBox1.SelectionTabs = new int[] {20};
         }
 
         private void ProgramForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -129,6 +130,7 @@ jnz start
                     richTextBox1.Select(linesInfo[line].start, linesInfo[line].length);
                     richTextBox1.SelectionColor = Color.White;
                     richTextBox1.SelectionBackColor = Color.Brown;
+                    richTextBox1.ScrollToCaret();
                     richTextBox1.DeselectAll();
                 }
             }
@@ -194,6 +196,14 @@ jnz start
             richTextBox1.ReadOnly = false;
             MainForm.Instance.WriteConsole("Выполнение программы завершено.");
             this.UpdateView();
+        }
+
+        private void richTextBox1_TextChanged(object sender, EventArgs e)
+        {
+            if (MainForm.Instance != null)
+            {
+                MainForm.Instance.SetFileChanged(true);
+            }
         }
     }
 }

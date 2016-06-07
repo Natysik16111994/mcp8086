@@ -335,17 +335,17 @@ namespace Emulator
             string a = operand.Substring(operand.Length - 1, 1);
             if (a == "b")
             {
-                a = a.Trim(("b01").ToCharArray());
+                a = operand.Trim(("b01").ToCharArray());
                 if (a.Length == 0) return false;
             }
             else if (a == "o")
             {
-                a = a.Trim(("o01234567").ToCharArray());
+                a = operand.Trim(("o01234567").ToCharArray());
                 if(a.Length == 0) return false;
             }
             else if (a == "h")
             {
-                a = a.Trim(("h0123456789abcdef").ToCharArray());
+                a = operand.Trim(("h0123456789abcdef").ToCharArray());
                 if(a.Length == 0) return false;
             }
             return true;

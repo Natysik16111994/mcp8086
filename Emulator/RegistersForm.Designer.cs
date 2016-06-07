@@ -754,9 +754,9 @@
             // 
             this.groupBox5.Controls.Add(this.labelIP);
             this.groupBox5.Controls.Add(this.IP);
-            this.groupBox5.Location = new System.Drawing.Point(594, 12);
+            this.groupBox5.Location = new System.Drawing.Point(605, 12);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(133, 145);
+            this.groupBox5.Size = new System.Drawing.Size(122, 145);
             this.groupBox5.TabIndex = 18;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Указатель команд";
@@ -787,10 +787,10 @@
             this.groupBox3.Controls.Add(this.BP);
             this.groupBox3.Location = new System.Drawing.Point(309, 12);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(140, 145);
+            this.groupBox3.Size = new System.Drawing.Size(151, 145);
             this.groupBox3.TabIndex = 16;
             this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Указателье регистры";
+            this.groupBox3.Text = "Указательные регистры";
             // 
             // labelSP
             // 
@@ -838,7 +838,7 @@
             this.groupBox4.Controls.Add(this.ES);
             this.groupBox4.Controls.Add(this.DS);
             this.groupBox4.Controls.Add(this.CS);
-            this.groupBox4.Location = new System.Drawing.Point(455, 12);
+            this.groupBox4.Location = new System.Drawing.Point(466, 12);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(133, 145);
             this.groupBox4.TabIndex = 17;

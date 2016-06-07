@@ -36,6 +36,9 @@ jne l
 jc l
 jnae l
 jb l
+jnc l
+jae l
+jnb l
 jp l
 jnp l
 js l

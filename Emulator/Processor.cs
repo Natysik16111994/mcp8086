@@ -87,7 +87,8 @@ namespace Emulator
         /** ADD **/
         public void Add(Register a, object b, RT at, RT bt)
         {
-            SetRegisterValue(a, at, GetRegisterValue(a, at) + GetValueFromObject(b, bt));
+            a.Value += GetValueFromObject(b, bt);
+            //SetRegisterValue(a, at, GetRegisterValue(a, at) + GetValueFromObject(b, bt));
             a.UpdateFlags(this.Flags);
         }
 
@@ -226,9 +227,8 @@ namespace Emulator
         /** CMP **/ 
         public void Cmp(object a, object b, RT at, RT bt)
         {
-            int av = GetValueFromObject(a, at);
-            int bv = GetValueFromObject(b, bt);
-            _privateRegister.Decimal = Math.Abs(av - bv);
+            _privateRegister.Decimal = GetValueFromObject(a, at);
+            _privateRegister.Value -= GetValueFromObject(b, bt);
             _privateRegister.UpdateFlags(this.Flags);
         }
 
@@ -257,7 +257,9 @@ namespace Emulator
             }
             else // делим AX
             {
-                AX.Decimal = AX.Decimal / d;
+                int dec = AX.Decimal;
+                AX.LowDecimal = dec / d;
+                AX.HighDecimal = dec % d;
             }
             AX.UpdateFlags(this.Flags);
         }
@@ -708,7 +710,8 @@ namespace Emulator
          /** SUB **/
          public void Sub(Register a, object b, RT at, RT bt)
          {
-             SetRegisterValue(a, at, GetRegisterValue(a, at) - GetValueFromObject(b, bt));
+             //SetRegisterValue(a, at, GetRegisterValue(a, at) - GetValueFromObject(b, bt));
+             a.Value -= GetValueFromObject(b, bt);
              a.UpdateFlags(this.Flags);
          }
 

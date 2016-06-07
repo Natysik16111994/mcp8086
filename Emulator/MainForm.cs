@@ -21,6 +21,7 @@ namespace Emulator
 
         // Информация о текущем файле
         private string _filename = "";
+        private bool _fileChanged = false;
 
         public MainForm()
         {
@@ -35,6 +36,11 @@ namespace Emulator
 
             MainForm.Instance = this;
             UpdateTitle();
+        }
+
+        public void SetFileChanged(bool state)
+        {
+            this._fileChanged = state;
         }
 
         // Кнопки в меню
@@ -54,6 +60,7 @@ namespace Emulator
                     this._filename = openFileDialog1.FileName;
                     programForm.richTextBox1.Lines = File.ReadAllLines(this._filename);
                     programForm.StopProgram();
+                    SetFileChanged(false);
                 }
             }
             UpdateTitle();
@@ -88,6 +95,7 @@ namespace Emulator
         /// <returns>Результат вызова диалога.</returns>
         private DialogResult ConfirmSaveFile()
         {
+            if (!this._fileChanged) return DialogResult.No;
             if (programForm.richTextBox1.Text.Length == 0) return DialogResult.No;
             DialogResult dr = MessageBox.Show("Сначала сохранить программу?", this.ProductName, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
             if (dr == DialogResult.Yes) SaveFile();
@@ -102,6 +110,7 @@ namespace Emulator
         {
             if (this._filename.Length == 0) return SaveFileAs();
             else File.WriteAllLines(this._filename, programForm.richTextBox1.Lines);
+            SetFileChanged(false);
             return true;
         }
 
@@ -120,6 +129,7 @@ namespace Emulator
                     else if (saveFileDialog1.FilterIndex == 1) this._filename += ".txt";
                 }
                 File.WriteAllLines(this._filename, programForm.richTextBox1.Lines);
+                SetFileChanged(false);
                 return true;
             }
             return false;
@@ -236,7 +246,10 @@ namespace Emulator
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            programForm.richTextBox1.Lines = File.ReadAllLines("factorial.asm");
+           /* this._filename = "nok.asm";
+            programForm.richTextBox1.Lines = File.ReadAllLines(this._filename);
+           
+            this.UpdateTitle();*/
         }
     }
 }
