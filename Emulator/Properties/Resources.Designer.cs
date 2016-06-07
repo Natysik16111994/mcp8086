@@ -121,12 +121,23 @@ namespace Emulator.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Значок).
+        /// </summary>
+        internal static System.Drawing.Icon _1464246333_cpu_processor {
+            get {
+                object obj = ResourceManager.GetObject("_1464246333_cpu_processor", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на ; Тип записи
         ///; ИНСТРУКЦИЯ [ОПЕРАНД1] [ОПЕРАНД2]
         ///; r - регистр
         ///; d - число
         ///; v - значение (регистр или число)
         ///; l - метка, название подпрограммы
+        ///; a - массив
         ///
         ///add r v
         ///adc r v
@@ -159,6 +170,9 @@ namespace Emulator.Properties {
         ///jc l
         ///jnae l
         ///jb l
+        ///jnc l
+        ///jae l
+        ///jnb l
         ///jp l
         ///jnp l
         ///js l
@@ -173,12 +187,7 @@ namespace Emulator.Properties {
         ///jnle l
         ///jge l
         ///jnl l
-        ///jl l
-        ///jnge l
-        ///jle l
-        ///jng l
-        ///jcxz l
-        ///jmp [остаток строки не уместился]&quot;;.
+        ///jl l [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string instructions {
             get {

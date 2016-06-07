@@ -1,6 +1,6 @@
-mov ax, 7
-mov bx, 2
-
+; НОК
+mov ax, 240
+mov bx, 150
 ; - - -
 mov cs, ax
 mov ds, bx

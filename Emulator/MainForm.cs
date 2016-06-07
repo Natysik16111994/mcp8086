@@ -59,6 +59,7 @@ namespace Emulator
         {
             if (ConfirmSaveFile() != DialogResult.Cancel)
             {
+                openFileDialog1.InitialDirectory = Directory.GetCurrentDirectory();
                 if (openFileDialog1.ShowDialog() == DialogResult.OK)
                 {
                     this._filename = openFileDialog1.FileName;

@@ -1,4 +1,4 @@
-; Add
+; Сложение
 mov ax, 20
 mov bx, 34
 add ax, bx

@@ -7,7 +7,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{54624291-3308-4AF3-BDD2-0AC9053CC675}
 AppName=Модель процессора Intel 8086
-AppVersion=1.0 RC
+AppVersion=1.0
 ;AppVerName=Модель процессора Intel 8086 1.0 RC
 AppPublisher=Natalia Loginova
 AppPublisherURL=http://www.example.com/

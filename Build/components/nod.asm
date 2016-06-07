@@ -1,5 +1,7 @@
-mov ax, 180
+; НОД
+mov ax, 240
 mov bx, 150
+
 ; - - -
 compare:
 cmp ax, bx
@@ -12,9 +14,9 @@ mov ax, bx
 mov bx, cx
 
 start:
-mov cx, ax
+;mov cx, ax
 div bx
-mov ax, ah
+mov ax, dx
 cmp ax, 0
 jne compare
 

@@ -33,6 +33,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>1464246333_cpu-processor.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -139,6 +142,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\instructions.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\1464246333_cpu-processor.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="1464246333_cpu-processor.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,4 +1,6 @@
+; Факториал
 mov cx, 5
+
 ; - - -
 mov ax, 1
 start:
