@@ -23,6 +23,8 @@ namespace Emulator
         private string _filename = "";
         private bool _fileChanged = false;
 
+        private Queue<string> consoleQueue;
+
         public MainForm()
         {
             InitializeComponent();
@@ -33,6 +35,7 @@ namespace Emulator
             registersForm = new RegistersForm(processor);
             programForm = new ProgramForm(processor);
             outputForm = new OutputForm();
+            consoleQueue = new Queue<string>();
 
             MainForm.Instance = this;
             UpdateTitle();
@@ -229,23 +232,20 @@ namespace Emulator
         }
 
         /// <summary>
-        /// Записывает строку в консоль вывода
+        /// Записывает строку в консоль вывода (Асинхронно)
         /// </summary>
         /// <param name="text">Записываемый текст</param>
         public void WriteConsole(string text)
         {
             string time = DateTime.Now.ToLongTimeString();
-            outputForm.richTextBox1.AppendText(time + "\t" + text + "\n");
-            outputForm.richTextBox1.SelectionStart = outputForm.richTextBox1.Text.Length;
-            outputForm.richTextBox1.Focus();
+            consoleQueue.Enqueue(time + "\t" + text + "\n");
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-           /* this._filename = "nok.asm";
+            this._filename = "text.asm";
             programForm.richTextBox1.Lines = File.ReadAllLines(this._filename);
-           
-            this.UpdateTitle();*/
+            this.UpdateTitle();
         }
 
         private void десятиричнаяToolStripMenuItem_Click(object sender, EventArgs e)
@@ -263,6 +263,16 @@ namespace Emulator
         public bool OutputHex()
         {
             return шестнадцатеричнаяToolStripMenuItem.Checked;
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            while (consoleQueue.Count > 0)
+            {
+                outputForm.richTextBox1.AppendText(consoleQueue.Dequeue());
+                outputForm.richTextBox1.SelectionStart = outputForm.richTextBox1.Text.Length;
+                outputForm.richTextBox1.Focus();
+            }
         }
     }
 }

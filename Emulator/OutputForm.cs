@@ -38,5 +38,10 @@ namespace Emulator
             this.textBox1.Visible = false;
             this.richTextBox1.Height += (this.textBox1.Height + 5);
         }
+
+        private void очиститьКонсольToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.richTextBox1.Clear();
+        }
     }
 }

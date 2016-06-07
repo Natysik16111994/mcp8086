@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="AsmValidator.cs" />
     <Compile Include="Assembler.cs" />
+    <Compile Include="BasicMemory.cs" />
     <Compile Include="BinaryNumber.cs" />
     <Compile Include="DebugForm.cs">
       <SubType>Form</SubType>

@@ -4,6 +4,7 @@
 ; d - число
 ; v - значение (регистр или число)
 ; l - метка, название подпрограммы
+; a - массив
 
 add r v
 adc r v
@@ -60,6 +61,7 @@ jng l
 jcxz l
 jmp l
 lahf
+lea r a
 leave
 loop l
 loopnz l

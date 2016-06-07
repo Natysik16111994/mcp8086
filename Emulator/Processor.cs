@@ -10,6 +10,7 @@ namespace Emulator
     {
         public Register AX, BX, CX, DX, SI, DI, BP, SP, CS, DS, ES, SS, IP, Flags;
         public Stack stack;
+        public BasicMemory memory;
         private Assembler _assembler;
         private Register _privateRegister;
 
@@ -32,6 +33,7 @@ namespace Emulator
             Flags = new Register();
 
             stack = new Stack(this);
+            memory = new BasicMemory();
             _assembler = new Assembler(this);
             _privateRegister = new Register();
         }
@@ -289,9 +291,43 @@ namespace Emulator
         /** INT **/
         public void Int(object a)
         {
+            int code = GetValueFromObject(a);
+            if (code == 33) // DOS-прерывания
+            {
+                if (AX.Decimal == 2) // Вывод символа
+                {
+                    byte bt = 0;
+                    try
+                    {
+                        bt = Convert.ToByte(DX.Decimal);
+                    }
+                    catch(Exception e) 
+                    {
+                        bt = 0;
+                    }
+                    MainForm.Instance.WriteConsole(Encoding.ASCII.GetString(new byte[] { bt }));
+                }
+                else if (AX.Decimal == 9) // Вывод строки
+                {
+                    byte[] bytes = GetBytesFromInt(memory.Get(DX.Decimal));
+                    MainForm.Instance.WriteConsole(Encoding.ASCII.GetString(bytes));
+                }
+            }
         }
 
-        /** J(COND) **/ //*****************************************
+        private byte[] GetBytesFromInt(int[] d)
+        {
+            byte[] a = new byte[d.Length];
+            try
+            {
+                for (int i = 0; i < d.Length; i++) a[i] = Convert.ToByte(d[i]);
+            }
+            catch (Exception e) { }
+            return a;
+        }
+
+        /** J(COND) **/
+        //*****************************************
         /** JZ/JE **/
         public void JZ(object a)
         {
@@ -420,6 +456,12 @@ namespace Emulator
             AX.Value.Number[5] = this.Flags.GetFlag(Register.Flags.PF);
             AX.Value.Number[6] = true;
             AX.Value.Number[7] = this.Flags.GetFlag(Register.Flags.CF);
+        }
+
+        /** LEA **/
+        public void Lea(Register a, string id, RT at)
+        {
+            SetRegisterValue(a, at, memory.GetAddr(id));
         }
 
         /** LEAVE **/

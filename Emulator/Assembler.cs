@@ -148,11 +148,12 @@ namespace Emulator
             openedProc.Clear(); closedProc.Clear();
             bodyProc.Clear();
             callStack.Clear();
+            processor.memory.Clear();
 
             string a, b, c;
             for (int i = 0; i < content.Length; i++)
             {
-                a = content[i].Trim().ToLower();
+                a = content[i].Trim();
                 if (a.Length == 0) continue;
                 b = "";
                 while (a.Length > 0)
@@ -174,6 +175,20 @@ namespace Emulator
                 }
                 b = b.Trim();
                 if (b.Length == 0) continue;
+
+                // определение объявления массива
+                if (IsArraySet(b))
+                {
+                    string name = "";
+                    int[] array = null;
+                    if (ParseArray(b, out name, out array))
+                    {
+                        processor.memory.Add(name, array);
+                        continue;
+                    }
+                }
+
+                // определение ассемблерной инструкции
                 AsmInstruction instruction = new AsmInstruction();
                 if (ParseString(b, out instruction))
                 {
@@ -301,7 +316,20 @@ namespace Emulator
                 operands[operand] += a;
             }
 
-            instruct.opcode = opcode;
+            for (int i = 0; i < 2; i++)
+            {
+                if (operands[i].Length >= 2)
+                {
+                    if (operands[i].Substring(0, 1) == "'" || operands[i].Substring(operands[i].Length - 1, 1) == "'")
+                    {
+                        operands[i] = operands[i].Trim('\'');
+                        if (operands[i].Length == 0) operands[i] = "0";
+                        operands[i] = Encoding.ASCII.GetBytes(operands[i])[0].ToString();
+                    }
+                }
+            }
+
+            instruct.opcode = opcode.ToLower();
             instruct.operand1 = operands[0]; instruct.operand2 = operands[1];
             instruct.type1 = GetOperandType(operands[0]);
             instruct.type2 = GetOperandType(operands[1]);
@@ -310,7 +338,81 @@ namespace Emulator
             instruct.partsCount = 1 + (instruct.type1 != aiOperandType.Null ? 1 : 0) + (instruct.type2 != aiOperandType.Null ? 1 : 0);
             return true;
         }
-        
+
+        /// <summary>
+        /// Парсит строку в массив
+        /// </summary>
+        /// <param name="name">Возвращаемое имя массива</param>
+        /// <param name="array">Возвращаемый массив</param>
+        /// <returns></returns>
+        public bool ParseArray(string s, out string name, out int[] array)
+        {
+            name = "";
+            array = new int[] { 0 };
+            string[] parts = s.Split(' ');
+            if (parts[1] == "db" && parts[1] == "dw" && parts[1] == "dd") return false;
+            name = parts[0];
+            string p = string.Join(" ", parts, 2, parts.Length - 2);
+            List<int> bytes = new List<int>();
+            string a, b = "";
+            bool quotes = false;
+            bool str = false;
+            for (int i = 0; i < p.Length; i++)
+            {
+                a = p.Substring(i, 1);
+                if (a == "'")
+                {
+                    quotes = !quotes;
+                    if (quotes) str = true;
+                }
+                if ((a == "," || i == p.Length - 1) && !quotes)
+                {
+                    EncodeData(str ? b : b.Trim(), str, bytes);
+                    str = false;
+                    b = "";
+                    continue;
+                }
+                if(a != "'") b += a;
+            }
+            array = bytes.ToArray();
+            bytes.Clear();
+            return true;
+        }
+
+        private void EncodeData(string d, bool text, List<int> list)
+        {
+            if (text)
+            {
+                byte[] data = Encoding.ASCII.GetBytes(d.TrimEnd('$'));
+                foreach (var dat in data) list.Add(dat);
+                return;
+            }
+            int res = 0;
+            int.TryParse(d, out res);
+            list.Add(res);
+        }
+
+        /// <summary>
+        /// Определяет, является ли строка определением массива
+        /// </summary>
+        /// <param name="s">Строка</param>
+        /// <returns></returns>
+        public bool IsArraySet(string s)
+        {
+            string[] parts = s.Split(' ');
+            if(parts.Length < 3) return false;
+            string p;
+            for(int i = 0; i < parts.Length; i++)
+            {
+                p = parts[i].Trim().ToLower();
+                if(p == "db" || p == "dw" || p == "dd")
+                {
+                    if (i != 0 && i != parts.Length - 1) return true;
+                }
+            }
+            return false;
+        }
+
         // Возвращает тип операнда
         public aiOperandType GetOperandType(string operand)
         {
@@ -575,6 +677,10 @@ namespace Emulator
 
                 case "lahf":
                     processor.Lahf();
+                    break;
+
+                case "lea":
+                    processor.Lea(ra, (string)value_b, inst.regtype1);
                     break;
 
                 case "leave":
