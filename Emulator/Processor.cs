@@ -249,7 +249,7 @@ namespace Emulator
         public void Div(object delit, RT delitT)
         {
             int d = GetValueFromObject(delit, delitT);
-            if (d > 255) // делим DX:AX
+            if (d > 255 || delitT == RT.None) // делим DX:AX
             {
                 int sum = BinaryNumber.GetDecimal(DX.Value.Binary + AX.Value.Binary, 2);
                 AX.Decimal = sum / d;

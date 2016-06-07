@@ -83,6 +83,17 @@ namespace Emulator
             }
         }
 
+        public int SignDecimal
+        {
+            get
+            {
+                double d = 0;
+                for (int i = 1; i < 16; i++) d += (this.Value.Number[i] ? 1 : 0) * Math.Pow(2, 15 - i);
+                if (this.Value.Number[0]) d = -d;
+                return Convert.ToInt32(d);
+            }
+        }
+
         public string HighHex
         {
             get

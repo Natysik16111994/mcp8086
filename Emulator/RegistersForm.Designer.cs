@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.labelDL = new System.Windows.Forms.Label();
             this.labelCL = new System.Windows.Forms.Label();
@@ -107,6 +108,7 @@
             this.ES = new System.Windows.Forms.Label();
             this.DS = new System.Windows.Forms.Label();
             this.CS = new System.Windows.Forms.Label();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.groupBox1.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -144,7 +146,11 @@
             this.labelDL.Name = "labelDL";
             this.labelDL.Size = new System.Drawing.Size(42, 13);
             this.labelDL.TabIndex = 15;
+            this.labelDL.Tag = "dx";
             this.labelDL.Text = "00";
+            this.toolTip1.SetToolTip(this.labelDL, "0");
+            this.labelDL.MouseLeave += new System.EventHandler(this.labelAH_MouseLeave);
+            this.labelDL.MouseHover += new System.EventHandler(this.labelAH_MouseHover);
             // 
             // labelCL
             // 
@@ -152,7 +158,11 @@
             this.labelCL.Name = "labelCL";
             this.labelCL.Size = new System.Drawing.Size(42, 13);
             this.labelCL.TabIndex = 14;
+            this.labelCL.Tag = "cx";
             this.labelCL.Text = "00";
+            this.toolTip1.SetToolTip(this.labelCL, "0");
+            this.labelCL.MouseLeave += new System.EventHandler(this.labelAH_MouseLeave);
+            this.labelCL.MouseHover += new System.EventHandler(this.labelAH_MouseHover);
             // 
             // labelBL
             // 
@@ -160,7 +170,11 @@
             this.labelBL.Name = "labelBL";
             this.labelBL.Size = new System.Drawing.Size(42, 13);
             this.labelBL.TabIndex = 13;
+            this.labelBL.Tag = "bx";
             this.labelBL.Text = "00";
+            this.toolTip1.SetToolTip(this.labelBL, "0");
+            this.labelBL.MouseLeave += new System.EventHandler(this.labelAH_MouseLeave);
+            this.labelBL.MouseHover += new System.EventHandler(this.labelAH_MouseHover);
             // 
             // labelAL
             // 
@@ -168,7 +182,11 @@
             this.labelAL.Name = "labelAL";
             this.labelAL.Size = new System.Drawing.Size(26, 13);
             this.labelAL.TabIndex = 12;
+            this.labelAL.Tag = "ax";
             this.labelAL.Text = "00";
+            this.toolTip1.SetToolTip(this.labelAL, "0");
+            this.labelAL.MouseLeave += new System.EventHandler(this.labelAH_MouseLeave);
+            this.labelAL.MouseHover += new System.EventHandler(this.labelAH_MouseHover);
             // 
             // labelDH
             // 
@@ -176,7 +194,11 @@
             this.labelDH.Name = "labelDH";
             this.labelDH.Size = new System.Drawing.Size(42, 13);
             this.labelDH.TabIndex = 11;
+            this.labelDH.Tag = "dx";
             this.labelDH.Text = "00";
+            this.toolTip1.SetToolTip(this.labelDH, "0");
+            this.labelDH.MouseLeave += new System.EventHandler(this.labelAH_MouseLeave);
+            this.labelDH.MouseHover += new System.EventHandler(this.labelAH_MouseHover);
             // 
             // labelCH
             // 
@@ -184,7 +206,11 @@
             this.labelCH.Name = "labelCH";
             this.labelCH.Size = new System.Drawing.Size(42, 13);
             this.labelCH.TabIndex = 10;
+            this.labelCH.Tag = "cx";
             this.labelCH.Text = "00";
+            this.toolTip1.SetToolTip(this.labelCH, "0");
+            this.labelCH.MouseLeave += new System.EventHandler(this.labelAH_MouseLeave);
+            this.labelCH.MouseHover += new System.EventHandler(this.labelAH_MouseHover);
             // 
             // labelBH
             // 
@@ -192,7 +218,11 @@
             this.labelBH.Name = "labelBH";
             this.labelBH.Size = new System.Drawing.Size(25, 13);
             this.labelBH.TabIndex = 9;
+            this.labelBH.Tag = "bx";
             this.labelBH.Text = "00";
+            this.toolTip1.SetToolTip(this.labelBH, "0");
+            this.labelBH.MouseLeave += new System.EventHandler(this.labelAH_MouseLeave);
+            this.labelBH.MouseHover += new System.EventHandler(this.labelAH_MouseHover);
             // 
             // labelAH
             // 
@@ -200,7 +230,11 @@
             this.labelAH.Name = "labelAH";
             this.labelAH.Size = new System.Drawing.Size(25, 13);
             this.labelAH.TabIndex = 8;
+            this.labelAH.Tag = "ax";
             this.labelAH.Text = "00";
+            this.toolTip1.SetToolTip(this.labelAH, "0");
+            this.labelAH.MouseLeave += new System.EventHandler(this.labelAH_MouseLeave);
+            this.labelAH.MouseHover += new System.EventHandler(this.labelAH_MouseHover);
             // 
             // AX
             // 
@@ -209,6 +243,7 @@
             this.AX.Name = "AX";
             this.AX.Size = new System.Drawing.Size(21, 13);
             this.AX.TabIndex = 2;
+            this.AX.Tag = "ax";
             this.AX.Text = "AX";
             // 
             // DX
@@ -218,6 +253,7 @@
             this.DX.Name = "DX";
             this.DX.Size = new System.Drawing.Size(22, 13);
             this.DX.TabIndex = 5;
+            this.DX.Tag = "dx";
             this.DX.Text = "DX";
             // 
             // L
@@ -236,6 +272,7 @@
             this.CX.Name = "CX";
             this.CX.Size = new System.Drawing.Size(21, 13);
             this.CX.TabIndex = 4;
+            this.CX.Tag = "cx";
             this.CX.Text = "CX";
             // 
             // BX
@@ -245,6 +282,7 @@
             this.BX.Name = "BX";
             this.BX.Size = new System.Drawing.Size(21, 13);
             this.BX.TabIndex = 3;
+            this.BX.Tag = "bx";
             this.BX.Text = "BX";
             // 
             // H
@@ -527,6 +565,7 @@
             this.labelFlagZF.Name = "labelFlagZF";
             this.labelFlagZF.Size = new System.Drawing.Size(38, 13);
             this.labelFlagZF.TabIndex = 49;
+            this.labelFlagZF.Tag = "";
             this.labelFlagZF.Text = "0";
             this.labelFlagZF.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
@@ -611,6 +650,7 @@
             this.label50.TabIndex = 34;
             this.label50.Text = "TF";
             this.label50.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.toolTip1.SetToolTip(this.label50, "Флаг трассировки (Trap Flag)");
             // 
             // label52
             // 
@@ -621,6 +661,7 @@
             this.label52.TabIndex = 32;
             this.label52.Text = "IF";
             this.label52.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.toolTip1.SetToolTip(this.label52, "Флаг прерывания (Interrupt Flag)");
             // 
             // label55
             // 
@@ -631,6 +672,7 @@
             this.label55.TabIndex = 31;
             this.label55.Text = "DF";
             this.label55.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.toolTip1.SetToolTip(this.label55, "Флаг направления (Direction Flag)");
             // 
             // label57
             // 
@@ -641,6 +683,7 @@
             this.label57.TabIndex = 30;
             this.label57.Text = "AF";
             this.label57.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.toolTip1.SetToolTip(this.label57, "Флаг дополнительного переноса (Auxiliaty Flag) [используется при работе с BCD]");
             // 
             // label59
             // 
@@ -651,6 +694,7 @@
             this.label59.TabIndex = 29;
             this.label59.Text = "PF";
             this.label59.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.toolTip1.SetToolTip(this.label59, "Флаг четности результата (Parity Flag)");
             // 
             // label61
             // 
@@ -661,6 +705,7 @@
             this.label61.TabIndex = 28;
             this.label61.Text = "SF";
             this.label61.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.toolTip1.SetToolTip(this.label61, "Флаг знака (Sign Flag)");
             // 
             // label62
             // 
@@ -671,6 +716,7 @@
             this.label62.TabIndex = 27;
             this.label62.Text = "ZF";
             this.label62.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.toolTip1.SetToolTip(this.label62, "Флаг нулевого результата (Zero Flag)");
             // 
             // label63
             // 
@@ -681,6 +727,7 @@
             this.label63.TabIndex = 26;
             this.label63.Text = "OF";
             this.label63.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.toolTip1.SetToolTip(this.label63, "Флаг переполнения (Overflow Flag)");
             // 
             // label64
             // 
@@ -691,6 +738,7 @@
             this.label64.TabIndex = 25;
             this.label64.Text = "CF";
             this.label64.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.toolTip1.SetToolTip(this.label64, "Флаг переноса (Carry Flag)");
             // 
             // labelFlag15
             // 
@@ -721,7 +769,10 @@
             this.labelDI.Name = "labelDI";
             this.labelDI.Size = new System.Drawing.Size(31, 13);
             this.labelDI.TabIndex = 3;
+            this.labelDI.Tag = "di";
             this.labelDI.Text = "0000";
+            this.labelDI.MouseLeave += new System.EventHandler(this.labelAH_MouseLeave);
+            this.labelDI.MouseHover += new System.EventHandler(this.labelAH_MouseHover);
             // 
             // labelSI
             // 
@@ -730,7 +781,10 @@
             this.labelSI.Name = "labelSI";
             this.labelSI.Size = new System.Drawing.Size(31, 13);
             this.labelSI.TabIndex = 2;
+            this.labelSI.Tag = "si";
             this.labelSI.Text = "0000";
+            this.labelSI.MouseLeave += new System.EventHandler(this.labelAH_MouseLeave);
+            this.labelSI.MouseHover += new System.EventHandler(this.labelAH_MouseHover);
             // 
             // DI
             // 
@@ -768,7 +822,10 @@
             this.labelIP.Name = "labelIP";
             this.labelIP.Size = new System.Drawing.Size(31, 13);
             this.labelIP.TabIndex = 1;
+            this.labelIP.Tag = "ip";
             this.labelIP.Text = "0000";
+            this.labelIP.MouseLeave += new System.EventHandler(this.labelAH_MouseLeave);
+            this.labelIP.MouseHover += new System.EventHandler(this.labelAH_MouseHover);
             // 
             // IP
             // 
@@ -799,7 +856,10 @@
             this.labelSP.Name = "labelSP";
             this.labelSP.Size = new System.Drawing.Size(31, 13);
             this.labelSP.TabIndex = 3;
+            this.labelSP.Tag = "sp";
             this.labelSP.Text = "0000";
+            this.labelSP.MouseLeave += new System.EventHandler(this.labelAH_MouseLeave);
+            this.labelSP.MouseHover += new System.EventHandler(this.labelAH_MouseHover);
             // 
             // labelBP
             // 
@@ -808,7 +868,10 @@
             this.labelBP.Name = "labelBP";
             this.labelBP.Size = new System.Drawing.Size(31, 13);
             this.labelBP.TabIndex = 2;
+            this.labelBP.Tag = "bp";
             this.labelBP.Text = "0000";
+            this.labelBP.MouseLeave += new System.EventHandler(this.labelAH_MouseLeave);
+            this.labelBP.MouseHover += new System.EventHandler(this.labelAH_MouseHover);
             // 
             // SP
             // 
@@ -852,7 +915,10 @@
             this.labelSS.Name = "labelSS";
             this.labelSS.Size = new System.Drawing.Size(31, 13);
             this.labelSS.TabIndex = 19;
+            this.labelSS.Tag = "ss";
             this.labelSS.Text = "0000";
+            this.labelSS.MouseLeave += new System.EventHandler(this.labelAH_MouseLeave);
+            this.labelSS.MouseHover += new System.EventHandler(this.labelAH_MouseHover);
             // 
             // labelES
             // 
@@ -861,7 +927,10 @@
             this.labelES.Name = "labelES";
             this.labelES.Size = new System.Drawing.Size(31, 13);
             this.labelES.TabIndex = 18;
+            this.labelES.Tag = "es";
             this.labelES.Text = "0000";
+            this.labelES.MouseLeave += new System.EventHandler(this.labelAH_MouseLeave);
+            this.labelES.MouseHover += new System.EventHandler(this.labelAH_MouseHover);
             // 
             // labelDS
             // 
@@ -870,7 +939,10 @@
             this.labelDS.Name = "labelDS";
             this.labelDS.Size = new System.Drawing.Size(31, 13);
             this.labelDS.TabIndex = 17;
+            this.labelDS.Tag = "ds";
             this.labelDS.Text = "0000";
+            this.labelDS.MouseLeave += new System.EventHandler(this.labelAH_MouseLeave);
+            this.labelDS.MouseHover += new System.EventHandler(this.labelAH_MouseHover);
             // 
             // labelCS
             // 
@@ -879,7 +951,10 @@
             this.labelCS.Name = "labelCS";
             this.labelCS.Size = new System.Drawing.Size(31, 13);
             this.labelCS.TabIndex = 16;
+            this.labelCS.Tag = "cs";
             this.labelCS.Text = "0000";
+            this.labelCS.MouseLeave += new System.EventHandler(this.labelAH_MouseLeave);
+            this.labelCS.MouseHover += new System.EventHandler(this.labelAH_MouseHover);
             // 
             // SS
             // 
@@ -916,6 +991,11 @@
             this.CS.Size = new System.Drawing.Size(21, 13);
             this.CS.TabIndex = 0;
             this.CS.Text = "CS";
+            // 
+            // toolTip1
+            // 
+            this.toolTip1.Draw += new System.Windows.Forms.DrawToolTipEventHandler(this.toolTip1_Draw);
+            this.toolTip1.Popup += new System.Windows.Forms.PopupEventHandler(this.toolTip1_Popup);
             // 
             // RegistersForm
             // 
@@ -1031,5 +1111,6 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }

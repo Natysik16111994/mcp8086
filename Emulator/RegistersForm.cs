@@ -112,5 +112,33 @@ namespace Emulator
                 this.Visible = MainForm.Instance.окноРегистровToolStripMenuItem.Checked = false;
             }
         }
+
+        // Возникает при открытии подсказки
+        private void toolTip1_Popup(object sender, PopupEventArgs e)
+        {
+        }
+
+        private void toolTip1_Draw(object sender, DrawToolTipEventArgs e)
+        {
+        }
+
+        private void labelAH_MouseHover(object sender, EventArgs e)
+        {
+            const string body = "Двоичное: {0}\nБез знака: {1}\nСо знаком: {2}\nШестнадцатеричное: {3}";
+            Label label = sender as Label;
+            string tag = label.Tag.ToString();
+            if (tag.Length != 0)
+            {
+                Register reg = _processor.GetRegisterByName(tag);
+                toolTip1.ToolTipTitle = tag.ToUpper();
+                toolTip1.Show(string.Format(body, reg.Value.Binary, reg.Decimal.ToString(), reg.SignDecimal.ToString(), reg.Hex), label);
+            }
+        }
+
+        private void labelAH_MouseLeave(object sender, EventArgs e)
+        {
+            toolTip1.Hide(sender as Label);
+            toolTip1.ToolTipTitle = "";
+        }
     }
 }

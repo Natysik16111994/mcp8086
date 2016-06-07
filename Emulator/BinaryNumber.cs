@@ -290,14 +290,15 @@ namespace Emulator
         public static bool[] GetBinary32(int dec)
         {
             List<bool> bin = new List<bool>();
+            int n = Math.Abs(dec);
             while (dec > 0)
             {
-                bin.Add(dec % 2 == 1);
-                //bin.Insert(bin.Count, dec % 2 == 1);
-                dec /= 2;
+                bin.Add(n % 2 == 1);
+                n /= 2;
             }
             while (bin.Count < 32) bin.Add(false);
             bin.Reverse();
+            if (dec < 0) bin[0] = true;
             return bin.ToArray();
         }
 
@@ -305,7 +306,7 @@ namespace Emulator
         public static bool[] GetBinary(int dec)
         {
             bool[] bin = BinaryNumber.Zero;
-            int n = dec > BinaryNumber.MaxUnsignedDecimal ? 0 : dec;
+            int n = dec > BinaryNumber.MaxUnsignedDecimal ? 0 : Math.Abs(dec);
             int index = 15;
             while (n > 0)
             {
@@ -313,6 +314,7 @@ namespace Emulator
                 n /= 2;
                 index--;
             }
+            if (dec < 0) bin[0] = true;
             return bin;
         }
 
