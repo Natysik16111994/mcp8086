@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
@@ -243,9 +244,9 @@ namespace Emulator
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            this._filename = "text.asm";
+            /*this._filename = "text.asm";
             programForm.richTextBox1.Lines = File.ReadAllLines(this._filename);
-            this.UpdateTitle();
+            this.UpdateTitle();*/
         }
 
         private void десятиричнаяToolStripMenuItem_Click(object sender, EventArgs e)
@@ -273,6 +274,15 @@ namespace Emulator
                 outputForm.richTextBox1.SelectionStart = outputForm.richTextBox1.Text.Length;
                 outputForm.richTextBox1.Focus();
             }
+        }
+
+        private void справкаToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Process.Start("help.pdf");
+            }
+            catch (Exception ex) { }
         }
     }
 }
