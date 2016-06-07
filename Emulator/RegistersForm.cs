@@ -24,23 +24,23 @@ namespace Emulator
         /// <param name="showChanges">Флаг, указывает подсвечивать ли изменяемые значения</param>
         public void UpdateView(bool showChanges = false)
         {
-            SetText(labelAH, _processor.AX.HighHex, showChanges);
-            SetText(labelAL, _processor.AX.LowHex, showChanges);
-            SetText(labelBH, _processor.BX.HighHex, showChanges);
-            SetText(labelBL, _processor.BX.LowHex, showChanges);
-            SetText(labelCH, _processor.CX.HighHex, showChanges);
-            SetText(labelCL, _processor.CX.LowHex, showChanges);
-            SetText(labelDH, _processor.DX.HighHex, showChanges);
-            SetText(labelDL, _processor.DX.LowHex, showChanges);
-            SetText(labelSI, _processor.SI.Hex, showChanges);
-            SetText(labelDI, _processor.DI.Hex, showChanges);
-            SetText(labelBP, _processor.BP.Hex, showChanges);
-            SetText(labelSP, _processor.SP.Hex, showChanges);
-            SetText(labelCS, _processor.CS.Hex, showChanges);
-            SetText(labelDS, _processor.DS.Hex, showChanges);
-            SetText(labelES, _processor.ES.Hex, showChanges);
-            SetText(labelSS, _processor.SS.Hex, showChanges);
-            SetText(labelIP, _processor.IP.Hex, showChanges);
+            SetText(labelAH, GetRegisterValue(_processor.AX, Register.Types.High), showChanges);
+            SetText(labelAL, GetRegisterValue(_processor.AX, Register.Types.Low), showChanges);
+            SetText(labelBH, GetRegisterValue(_processor.BX, Register.Types.High), showChanges);
+            SetText(labelBL, GetRegisterValue(_processor.BX, Register.Types.Low), showChanges);
+            SetText(labelCH, GetRegisterValue(_processor.CX, Register.Types.High), showChanges);
+            SetText(labelCL, GetRegisterValue(_processor.CX, Register.Types.Low), showChanges);
+            SetText(labelDH, GetRegisterValue(_processor.DX, Register.Types.High), showChanges);
+            SetText(labelDL, GetRegisterValue(_processor.DX, Register.Types.Low), showChanges);
+            SetText(labelSI, GetRegisterValue(_processor.SI, Register.Types.None), showChanges);
+            SetText(labelDI, GetRegisterValue(_processor.DI, Register.Types.None), showChanges);
+            SetText(labelBP, GetRegisterValue(_processor.BP, Register.Types.None), showChanges);
+            SetText(labelSP, GetRegisterValue(_processor.SP, Register.Types.None), showChanges);
+            SetText(labelCS, GetRegisterValue(_processor.CS, Register.Types.None), showChanges);
+            SetText(labelDS, GetRegisterValue(_processor.DS, Register.Types.None), showChanges);
+            SetText(labelES, GetRegisterValue(_processor.ES, Register.Types.None), showChanges);
+            SetText(labelSS, GetRegisterValue(_processor.SS, Register.Types.None), showChanges);
+            SetText(labelIP, GetRegisterValue(_processor.IP, Register.Types.None), showChanges);
             SetText(labelFlagOF, _processor.Flags.GetFlag(Register.Flags.OF) ? "1" : "0", showChanges);
             SetText(labelFlagDF, _processor.Flags.GetFlag(Register.Flags.DF) ? "1" : "0", showChanges);
             SetText(labelFlagIF, _processor.Flags.GetFlag(Register.Flags.IF) ? "1" : "0", showChanges);
@@ -51,6 +51,38 @@ namespace Emulator
             SetText(labelFlagPF, _processor.Flags.GetFlag(Register.Flags.PF) ? "1" : "0", showChanges);
             SetText(labelFlagCF, _processor.Flags.GetFlag(Register.Flags.CF) ? "1" : "0", showChanges);
             this.Update();
+        }
+
+        /// <summary>
+        /// Возвращает значение регистра в зависимости от выбранного типа выводаs
+        /// </summary>
+        /// <param name="reg">Регистр</param>
+        /// <param name="type">Тип регистра</param>
+        /// <returns></returns>
+        private string GetRegisterValue(Register reg, Register.Types type)
+        {
+            bool hex = MainForm.Instance.OutputHex();
+            if (hex)
+            {
+                if (type == Register.Types.High) return reg.HighHex;
+                else if (type == Register.Types.Low) return reg.LowHex;
+                return reg.Hex;
+            }
+
+            string s = reg.Decimal.ToString();
+            int len = 5;
+            if (type == Register.Types.High)
+            {
+                s = reg.HighDecimal.ToString();
+                len = 3;
+            }
+            else if (type == Register.Types.Low)
+            {
+                s = reg.LowDecimal.ToString();
+                len = 3;
+            }
+            while (s.Length < len) s = "0" + s;
+            return s;
         }
 
         /// <summary>

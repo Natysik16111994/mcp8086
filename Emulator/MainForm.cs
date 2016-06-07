@@ -210,6 +210,7 @@ namespace Emulator
         private void toolStripButton_Stop_Click(object sender, EventArgs e)
         {
             programForm.StopProgram();
+            this.WriteConsole("Выполнение прервано пользователем.");
         }
 
         /// <summary>
@@ -234,11 +235,6 @@ namespace Emulator
         public void WriteConsole(string text)
         {
             string time = DateTime.Now.ToLongTimeString();
-            /*outputForm.richTextBox1.AppendText(time);
-            outputForm.richTextBox1.SelectionStart = outputForm.richTextBox1.Text.Length - time.Length;
-            outputForm.richTextBox1.SelectionLength = time.Length;
-            outputForm.richTextBox1.SelectionFont = new System.Drawing.Font(outputForm.richTextBox1.Font, FontStyle.Bold);
-            outputForm.richTextBox1.SelectionStart = outputForm.richTextBox1.SelectionLength = 0;*/
             outputForm.richTextBox1.AppendText(time + "\t" + text + "\n");
             outputForm.richTextBox1.SelectionStart = outputForm.richTextBox1.Text.Length;
             outputForm.richTextBox1.Focus();
@@ -250,6 +246,23 @@ namespace Emulator
             programForm.richTextBox1.Lines = File.ReadAllLines(this._filename);
            
             this.UpdateTitle();*/
+        }
+
+        private void десятиричнаяToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem item = sender as ToolStripMenuItem;
+            bool hex = (item.Tag.ToString() == "1");
+            шестнадцатеричнаяToolStripMenuItem.Checked = hex;
+            десятиричнаяToolStripMenuItem.Checked = !hex;
+        }
+
+        /// <summary>
+        /// Указывает, производится ли вывод в шестнадцатеричном формате
+        /// </summary>
+        /// <returns></returns>
+        public bool OutputHex()
+        {
+            return шестнадцатеричнаяToolStripMenuItem.Checked;
         }
     }
 }
